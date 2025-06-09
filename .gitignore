@@ -1,0 +1,58 @@
+### Build ###
+app-bundle.js
+mvnw
+mvnw.cmd
+!.mvn/wrapper/maven-wrapper.jar
+bin/
+build/
+/.gradle/
+.mvn/
+node/
+node_modules/
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.eml
+.iml
+.ipr
+.iws
+.idea/
+/.intellij/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+.tern-project
+.metadata/
+.recommenders/
+Servers/
+.settings/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### Other ###
+.bak
+.DS_Store
+.log
+data/
+.git/
+logs/
+.mirrord/
+RemoteSystemsTempFiles/
+.vscode/
+workspace/
+workingDir/
