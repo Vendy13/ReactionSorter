@@ -27,4 +27,8 @@ public class DirectoryCache {
 			directoryCache.put(directoryCache.size(), reactionObject);
 		}
 	}
+	
+	public LinkedHashMap<Integer, ReactionObject> getDirectoryCache() {
+		return directoryCache;
+	}
 }

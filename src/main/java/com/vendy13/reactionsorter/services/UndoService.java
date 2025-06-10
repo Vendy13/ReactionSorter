@@ -12,7 +12,7 @@ public class UndoService extends ButtonService {
 	 * Update file name field
 	 * Clear cache
 	 */
-	{
-		cachedIndex = 19;
-	}
+//	{
+//		cachedIndex = 19;
+//	}
 }

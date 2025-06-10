@@ -1,12 +1,18 @@
 package com.vendy13.reactionsorter.services;
 
 import com.vendy13.reactionsorter.objects.DirectoryCache;
-import com.vendy13.reactionsorter.objects.NextCache;
+import com.vendy13.reactionsorter.objects.ReactionObject;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.*;
 
+@Service
 abstract class ButtonService {
 	/*
 	 * Load file
@@ -17,17 +23,21 @@ abstract class ButtonService {
 	 * Update cache
 	 */
 	
+	@Autowired
 	protected DirectoryCache directoryCache;
-	protected NextCache nextCache;
 	
 	// TODO Change to cachedFile
-	protected int cachedIndex;
+	protected int cachedIndex = 0;
 	protected String cachedFileName;
 	protected String targetDirectory;
 	protected String workingDirectory;
 	
-	public void loadWorkingFile() {
+	public void loadWorkingFile(ImageView imageView) throws FileNotFoundException {
 		// TODO calls index from DirCache
+		ReactionObject workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
+		Image image = new Image(new FileInputStream(workingFile.filePath()));
+		imageView.setImage(image);
+		cachedIndex++;
 	}
 	
 	public void moveFile(String fileRename) throws IOException {

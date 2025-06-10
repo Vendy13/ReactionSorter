@@ -10,7 +10,7 @@ public class SkipService extends ButtonService {
 	 * Update file name field
 	 * Cache skipped file for Undo
 	 */
-	{
-		cachedIndex = 21;
-	}
+//	{
+//		cachedIndex = 21;
+//	}
 }

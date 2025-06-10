@@ -34,6 +34,7 @@ public class WorkingSceneController {
 	private UndoService undoService;
 	
 	public void move(ActionEvent event) throws IOException {
+		moveService.loadWorkingFile(imageView);
 		moveService.moveFile(fileRename.getText());
 		moveService.updateNumber(workingFileIndex);
 	}

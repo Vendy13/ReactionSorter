@@ -15,7 +15,7 @@ public class MoveService extends ButtonService {
 	 * Cache changes for Undo
 	 */
 	
-	{
-		cachedIndex = 21;
-	}
+//	{
+//		cachedIndex = 21;
+//	}
 }
