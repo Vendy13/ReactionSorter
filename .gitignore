@@ -2,7 +2,6 @@
 app-bundle.js
 mvnw
 mvnw.cmd
-!.mvn/wrapper/maven-wrapper.jar
 bin/
 build/
 /.gradle/
@@ -10,6 +9,7 @@ build/
 node/
 node_modules/
 target/
+!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 

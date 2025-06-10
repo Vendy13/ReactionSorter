@@ -65,7 +65,7 @@
         </Menu>
       </menus>
     </MenuBar>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="412.0" prefWidth="696.0" VBox.vgrow="ALWAYS">
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
             <VBox prefHeight="575.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
@@ -75,7 +75,7 @@
                            <buttons>
                               <TextField fx:id="workingDirectory" editable="false" promptText="Working Directory" />
                               <Text fx:id="workingFileIndex" strokeType="OUTSIDE" strokeWidth="0.0" text="20 of 150" />
-                              <TextField fx:id="targetDirectory" />
+                              <TextField fx:id="targetDirectory" promptText="Target Directory" />
                               <SplitMenuButton mnemonicParsing="false" text="SplitMenuButton">
                                 <items>
                                   <MenuItem mnemonicParsing="false" text="Action 1" />
@@ -83,13 +83,16 @@
                                 </items>
                               </SplitMenuButton>
                            </buttons>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
                         </ButtonBar>
                      </children>
                   </HBox>
-                  <Pane>
+                  <Pane prefHeight="500.0">
                      <children>
-                        <ImageView fitHeight="339.0" fitWidth="509.0" pickOnBounds="true" preserveRatio="true" />
-                        <MediaView fitHeight="200.0" fitWidth="200.0" layoutX="155.0" layoutY="70.0">
+                        <ImageView fx:id="imageView" fitHeight="449.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true" />
+                        <MediaView fx:id="mediaView" fitHeight="449.0" fitWidth="800.0">
                            <viewport>
                               <Rectangle2D />
                            </viewport>
@@ -101,14 +104,30 @@
                   </Pane>
                   <VBox>
                      <children>
-                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+                        <HBox alignment="CENTER" prefHeight="70.0" prefWidth="800.0" spacing="50.0">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                              <HBox spacing="3.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Type:" />
+                                    <Text fx:id="fileType" strokeType="OUTSIDE" strokeWidth="0.0" text=".png" />
+                                 </children>
+                              </HBox>
+                              <HBox spacing="3.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dimensions:" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="1920x1080" />
+                                 </children>
+                              </HBox>
+                              <HBox spacing="3.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Size:" />
+                                    <Text fx:id="fileSize" strokeType="OUTSIDE" strokeWidth="0.0" text="9 kB" />
+                                 </children>
+                              </HBox>
                            </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="0.0" prefWidth="800.0">
                            <children>
@@ -127,7 +146,7 @@
                               </ButtonBar>
                            </children>
                            <padding>
-                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
                         </HBox>
                      </children>

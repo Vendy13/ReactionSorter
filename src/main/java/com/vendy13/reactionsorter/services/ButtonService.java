@@ -1,12 +1,11 @@
 package com.vendy13.reactionsorter.services;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
+import com.vendy13.reactionsorter.objects.DirectoryCache;
+import com.vendy13.reactionsorter.objects.NextCache;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Arrays;
 
 abstract class ButtonService {
 	/*
@@ -18,21 +17,26 @@ abstract class ButtonService {
 	 * Update cache
 	 */
 	
+	protected DirectoryCache directoryCache;
+	protected NextCache nextCache;
+	
+	// TODO Change to cachedFile
 	protected int cachedIndex;
+	protected String cachedFileName;
+	protected String targetDirectory;
+	protected String workingDirectory;
 	
 	public void loadWorkingFile() {
 		// TODO calls index from DirCache
 	}
 	
-	public void moveFile(Path source, Path target) throws IOException {
-		Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+	public void moveFile(String fileRename) throws IOException {
+//		Files.move(Path.of(workingDirectory + cachedFileName), Path.of(targetDirectory + fileRename), StandardCopyOption.ATOMIC_MOVE);
 	}
 	
 	public void updateNumber(Text workingFileIndex) {
 		// TODO updates number in UI via index, maybe combine with filename field update
-		String[] oldText = workingFileIndex.getText().split(" ");
-		oldText[0] = String.valueOf(cachedIndex);
-		workingFileIndex.setText(Arrays.toString(oldText));
+		workingFileIndex.setText(workingFileIndex.getText().replaceFirst("\\d+", String.valueOf(cachedIndex)));
 	}
 	
 //	abstract void updateFileNameField();
