@@ -7,12 +7,11 @@ public class UndoService extends ButtonService {
 	/*
 	 * Load from Move/Skip cache
 	 * Move file
-	 * Update number to previous
-	 * Load previous file
-	 * Update file name field
-	 * Clear cache
+	 * DONE Update number to previous
+	 * DONE Load previous file
+	 * DONE Update file name field
+	 * Unneeded? Clear cache
 	 */
-//	{
-//		cachedIndex = 19;
-//	}
+	
+	
 }

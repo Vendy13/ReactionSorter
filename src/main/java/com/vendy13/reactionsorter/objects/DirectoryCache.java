@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 public class DirectoryCache {
 	
 	private final LinkedHashMap<Integer, ReactionObject> directoryCache = new LinkedHashMap<>();
+	private int cachedIndex = 0;
 	
 	@PostConstruct
 	public void fetchDirectoryCache() {
@@ -26,9 +27,24 @@ public class DirectoryCache {
 			ReactionObject reactionObject = new ReactionObject(fileName, filePath, fileExtension, fileType, fileDimensions, fileSize);
 			directoryCache.put(directoryCache.size(), reactionObject);
 		}
+		System.out.println("DirCache instance: " + directoryCache);
 	}
 	
 	public LinkedHashMap<Integer, ReactionObject> getDirectoryCache() {
 		return directoryCache;
+	}
+	
+	public int getCachedIndex() {
+		return cachedIndex;
+	}
+	
+	public void nextCachedIndex() {
+		cachedIndex++;
+	}
+	
+	public void previousCachedIndex() {
+		if (cachedIndex > 0) {
+			cachedIndex--;
+		}
 	}
 }

@@ -115,7 +115,7 @@
                               <HBox spacing="3.0">
                                  <children>
                                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dimensions:" />
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="1920x1080" />
+                                    <Text fx:id="fileDimensions" strokeType="OUTSIDE" strokeWidth="0.0" text="1920x1080" />
                                  </children>
                               </HBox>
                               <HBox spacing="3.0">
