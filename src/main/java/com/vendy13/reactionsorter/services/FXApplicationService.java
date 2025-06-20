@@ -1,18 +1,13 @@
 package com.vendy13.reactionsorter.services;
 
 import com.vendy13.reactionsorter.utils.FxSpringContextBridge;
+import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 public class FXApplicationService extends Application {
-	
 	@Autowired
 	private ApplicationContext context;
 	
@@ -23,16 +18,7 @@ public class FXApplicationService extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StartingScene.fxml"));
-		loader.setControllerFactory(context::getBean); // Spring-aware FXMLLoader
-		Parent root = loader.load();
-		Scene scene = new Scene(root, 800, 600, Color.GRAY);
-		Image favicon = new Image(getClass().getResourceAsStream("/images/vendyOhNo.png"));
-
-		stage.setTitle("Reaction Sorter");
-		stage.getIcons().add(favicon);
-		stage.setScene(scene);
-		stage.show();
+		SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
 	}
 	
 	@Override

@@ -1,14 +1,12 @@
 package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.objects.DirectoryCache;
+import com.vendy13.reactionsorter.services.EndService;
 import com.vendy13.reactionsorter.services.MoveService;
 import com.vendy13.reactionsorter.services.SkipService;
 import com.vendy13.reactionsorter.services.UndoService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaView;
@@ -20,10 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @Component
-public class WorkingSceneController {
+public class WorkingSceneController implements StageAwareController {
 	@FXML
 	private Text fileDimensions;
 	@FXML
@@ -53,15 +52,24 @@ public class WorkingSceneController {
 	private SkipService skipService;
 	@Autowired
 	private UndoService undoService;
+	@Autowired
+	private EndService endService;
 	
-	private static final Logger log = LoggerFactory.getLogger(DirectoryCache.class);
+	private static final Logger log = LoggerFactory.getLogger(WorkingSceneController.class);
 	
+	private Stage stage;
 	private boolean undoFlag = true; // Cannot undo on first file
+	
+	// Loads first file
+	public void init() throws FileNotFoundException {
+		skipService.loadWorkingFile(imageView);
+		skipService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+	}
 	
 	public void move(ActionEvent event) throws IOException {
 		moveService.moveFile(fileRename.getText());
 		directoryCache.nextCachedIndex();
-		endCheck();
+		endService.endCheck(stage);
 		moveService.loadWorkingFile(imageView);
 		moveService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
 		undoFlag = false;
@@ -69,7 +77,7 @@ public class WorkingSceneController {
 	
 	public void skip(ActionEvent event) throws IOException {
 		directoryCache.nextCachedIndex();
-		endCheck();
+		endService.endCheck(stage);
 		skipService.loadWorkingFile(imageView);
 		skipService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
 		undoFlag = false;
@@ -86,23 +94,13 @@ public class WorkingSceneController {
 	
 	public void end(ActionEvent event) throws IOException {
 		// TODO Confirm end
+		// TODO Save current target directory in prefs
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
-		endCheck();
+		endService.endCheck(stage);
 	}
 	
-	public void endCheck() throws IOException {
-		if (directoryCache.getCachedIndex() >= directoryCache.getDirectoryCache().size() - 1) {
-			log.info("End of directory reached.");
-			
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StartingScene.fxml"));
-			loader.setControllerFactory(context::getBean); // Spring-aware FXMLLoader
-			
-			Parent root = loader.load();
-			Stage stage = (Stage)workingFileIndex.getScene().getWindow(); // TODO inject stage into controller
-			Scene scene = new Scene(root);
-			
-			stage.setScene(scene);
-			stage.show();
-		}
+	@Override
+	public void setStage(Stage stage) {
+		this.stage = stage;
 	}
 }

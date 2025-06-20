@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 
 @Component
 public class DirectoryCache {
-	
 	private static final Logger log = LoggerFactory.getLogger(DirectoryCache.class);
 	
 	private LinkedHashMap<Integer, ReactionObject> directoryCache;
@@ -21,6 +20,7 @@ public class DirectoryCache {
 		directoryCache = new LinkedHashMap<>();
 		cachedIndex = 0; // Reset index on new fetch
 		
+		//TODO Pull from prefs file
 		for (File file : new File("C:\\Users\\Vendy\\Downloads\\medals").listFiles()) {
 			String fileName = file.getName();
 			String filePath = file.getAbsolutePath();
