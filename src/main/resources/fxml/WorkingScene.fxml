@@ -74,7 +74,13 @@
                         <ButtonBar>
                            <buttons>
                               <TextField fx:id="workingDirectory" editable="false" promptText="Working Directory" />
-                              <Text fx:id="workingFileIndex" strokeType="OUTSIDE" strokeWidth="0.0" text="0 of ???" />
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Text fx:id="workingFileIndex" strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" of " />
+                                    <Text fx:id="directoryCount" strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
+                                 </children>
+                              </HBox>
                               <TextField fx:id="targetDirectory" promptText="Target Directory" />
                               <SplitMenuButton mnemonicParsing="false" text="SplitMenuButton">
                                 <items>

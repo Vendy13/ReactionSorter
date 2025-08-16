@@ -5,6 +5,7 @@ import com.vendy13.reactionsorter.services.EndService;
 import com.vendy13.reactionsorter.services.MoveService;
 import com.vendy13.reactionsorter.services.SkipService;
 import com.vendy13.reactionsorter.services.UndoService;
+import com.vendy13.reactionsorter.utils.PreferencesManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -30,13 +31,15 @@ public class WorkingSceneController implements StageAwareController {
 	@FXML
 	private Text fileType;
 	@FXML
+	private Text directoryCount;
+	@FXML
 	private Text workingFileIndex;
 	@FXML
-	private TextField fileRename;
+	private TextField workingDirectory;
 	@FXML
 	private TextField targetDirectory;
 	@FXML
-	private TextField workingDirectory;
+	private TextField fileRename;
 	@FXML
 	private ImageView imageView;
 	@FXML
@@ -46,6 +49,8 @@ public class WorkingSceneController implements StageAwareController {
 	private ApplicationContext context;
 	@Autowired
 	private DirectoryCache directoryCache;
+	@Autowired
+	private PreferencesManager preferencesManager;
 	@Autowired
 	private MoveService moveService;
 	@Autowired
@@ -62,6 +67,9 @@ public class WorkingSceneController implements StageAwareController {
 	
 	// Loads first file
 	public void init() throws FileNotFoundException {
+		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
+		workingDirectory.setText(preferencesManager.preferences.getProperty("defaultWorkingDirectory"));
+		targetDirectory.setText(preferencesManager.preferences.getProperty("defaultTargetDirectory"));
 		skipService.loadWorkingFile(imageView);
 		skipService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
 	}
@@ -94,7 +102,9 @@ public class WorkingSceneController implements StageAwareController {
 	
 	public void end(ActionEvent event) throws IOException {
 		// TODO Confirm end
-		// TODO Save current target directory in prefs
+		endService.confirmEnd();
+		preferencesManager.preferences.setProperty("targetDirectory", targetDirectory.getText());
+		preferencesManager.savePreferences();
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
 		endService.endCheck(stage);
 	}

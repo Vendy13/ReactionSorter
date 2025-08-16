@@ -59,7 +59,7 @@ abstract class ButtonService {
 	public void updateUI(Text fileDimensions, Text fileSize, Text fileType, Text workingFileIndex, TextField fileRename) {
 		int cachedIndex = directoryCache.getCachedIndex();
 		ReactionObject workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
-		workingFileIndex.setText(workingFileIndex.getText().replaceFirst("\\d+", String.valueOf(cachedIndex + 1)));
+		workingFileIndex.setText(String.valueOf(cachedIndex + 1));
 		fileType.setText(workingFile.fileExtension());
 		fileDimensions.setText(workingFile.fileDimensions());
 		fileSize.setText(workingFile.fileSize() + "B");

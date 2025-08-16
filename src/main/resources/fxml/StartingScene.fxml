@@ -70,8 +70,14 @@
                      <children>
                         <ButtonBar>
                            <buttons>
-                              <TextField fx:id="workingDirectory" editable="false" promptText="Working Directory" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="??? of ???" />
+                              <TextField fx:id="workingDirectory" promptText="Working Directory" />
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" of " />
+                                    <Text fx:id="cacheSize" strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
+                                 </children>
+                              </HBox>
                               <TextField fx:id="targetDirectory" promptText="Target Directory" />
                               <SplitMenuButton disable="true" mnemonicParsing="false" text="SplitMenuButton">
                                 <items>

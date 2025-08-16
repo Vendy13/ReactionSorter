@@ -1,8 +1,10 @@
 package com.vendy13.reactionsorter.services;
 
+import com.vendy13.reactionsorter.controllers.StartingSceneController;
 import com.vendy13.reactionsorter.utils.FxSpringContextBridge;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,7 +20,12 @@ public class FXApplicationService extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
+		Image icon = new Image("images/vendyOhNo.png");
+		stage.getIcons().add(icon);
+		stage.setTitle("Reaction Sorter");
+		
+		StartingSceneController controller = SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
+		controller.init(); // Loads the default directories from preferences
 	}
 	
 	@Override

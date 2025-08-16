@@ -28,5 +28,6 @@ public class EndService {
 		}
 	}
 	
+	// TODO Confirm end (new modal scene?)
 	public void confirmEnd() {}
 }

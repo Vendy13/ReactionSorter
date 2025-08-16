@@ -1,9 +1,11 @@
 package com.vendy13.reactionsorter.objects;
 
 import com.vendy13.reactionsorter.enums.FileType;
+import com.vendy13.reactionsorter.utils.PreferencesManager;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -11,6 +13,9 @@ import java.util.LinkedHashMap;
 
 @Component
 public class DirectoryCache {
+	@Autowired
+	private PreferencesManager preferencesManager;
+	
 	private static final Logger log = LoggerFactory.getLogger(DirectoryCache.class);
 	
 	private LinkedHashMap<Integer, ReactionObject> directoryCache;
@@ -20,8 +25,7 @@ public class DirectoryCache {
 		directoryCache = new LinkedHashMap<>();
 		cachedIndex = 0; // Reset index on new fetch
 		
-		//TODO Pull from prefs file
-		for (File file : new File("C:\\Users\\Vendy\\Downloads\\medals").listFiles()) {
+		for (File file : new File(preferencesManager.preferences.getProperty("defaultWorkingDirectory")).listFiles()) {
 			String fileName = file.getName();
 			String filePath = file.getAbsolutePath();
 			String fileExtension = FilenameUtils.getExtension(fileName).toUpperCase();
