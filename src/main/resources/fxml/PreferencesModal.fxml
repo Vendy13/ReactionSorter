@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="314.0" prefWidth="530.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox layoutX="108.0" layoutY="53.0" prefHeight="209.0" prefWidth="352.0" AnchorPane.bottomAnchor="54.0" AnchorPane.leftAnchor="108.0" AnchorPane.rightAnchor="108.0" AnchorPane.topAnchor="54.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="6.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Default Working Directory" />
+                  <TextField fx:id="defaultWorkingDirectory" />
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="6.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Default Target Directory" />
+                  <TextField fx:id="defaultTargetDirectory" />
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="6.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Move" />
+                  <CheckBox fx:id="confirmMove" mnemonicParsing="false" />
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="6.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Autoplay" />
+                  <CheckBox fx:id="autoplay" mnemonicParsing="false" />
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="6.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Persistent Volume" />
+                  <CheckBox fx:id="persistentVolume" mnemonicParsing="false" />
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="524.0" spacing="6.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Default Volume" />
+                  <Slider fx:id="defaultVolume" />
+               </children>
+               <VBox.margin>
+                  <Insets left="20.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

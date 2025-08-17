@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class EndService {
+public class EndService extends ButtonService {
 	@Autowired
 	private ApplicationContext context;
 	@Autowired
@@ -27,7 +27,4 @@ public class EndService {
 			SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
 		}
 	}
-	
-	// TODO Confirm end (new modal scene?)
-	public void confirmEnd() {}
 }

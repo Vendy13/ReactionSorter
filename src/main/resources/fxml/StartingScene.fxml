@@ -52,7 +52,7 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <MenuItem fx:id="preferencesMenu" mnemonicParsing="false" onAction="#preferencesMenu" text="Preferences…" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">

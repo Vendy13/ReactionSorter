@@ -75,6 +75,10 @@ public class WorkingSceneController implements StageAwareController {
 	}
 	
 	public void move(ActionEvent event) throws IOException {
+		// Only stops move if confirmMove is enabled and user selects NO
+		if (Boolean.parseBoolean(preferencesManager.preferences.getProperty("confirmMove")) &&
+				moveService.confirm(stage, "Move", "Move file?")) return;
+		
 		moveService.moveFile(fileRename.getText());
 		directoryCache.nextCachedIndex();
 		endService.endCheck(stage);
@@ -93,6 +97,7 @@ public class WorkingSceneController implements StageAwareController {
 	
 	public void undo(ActionEvent event) throws IOException {
 		if (undoFlag) return; // Prevent multiple undos
+		
 		directoryCache.previousCachedIndex();
 		undoService.moveFile(fileRename.getText());
 		undoService.loadWorkingFile(imageView);
@@ -101,10 +106,11 @@ public class WorkingSceneController implements StageAwareController {
 	}
 	
 	public void end(ActionEvent event) throws IOException {
-		// TODO Confirm end
-		endService.confirmEnd();
-		preferencesManager.preferences.setProperty("targetDirectory", targetDirectory.getText());
-		preferencesManager.savePreferences();
+		// Ends if YES is selected, continues if NO is selected
+		if (endService.confirm(stage, "End", "End sorting?")) return;
+		
+//		preferencesManager.preferences.setProperty("targetDirectory", targetDirectory.getText());
+//		preferencesManager.savePreferences(); // TODO cache current prefs, only save in prefs pane
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
 		endService.endCheck(stage);
 	}
