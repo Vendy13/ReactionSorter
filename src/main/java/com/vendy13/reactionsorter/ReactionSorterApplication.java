@@ -1,6 +1,6 @@
 package com.vendy13.reactionsorter;
 
-import com.vendy13.reactionsorter.services.FXApplicationService;
+import com.vendy13.reactionsorter.utils.FXApplicationService;
 import com.vendy13.reactionsorter.utils.FxSpringContextBridge;
 import javafx.application.Application;
 import org.springframework.boot.SpringApplication;

@@ -1,6 +1,6 @@
 package com.vendy13.reactionsorter.controllers;
 
-import com.vendy13.reactionsorter.objects.DirectoryCache;
+import com.vendy13.reactionsorter.caches.DirectoryCache;
 import com.vendy13.reactionsorter.services.EndService;
 import com.vendy13.reactionsorter.services.MoveService;
 import com.vendy13.reactionsorter.services.SkipService;
@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.FileNotFoundException;
@@ -45,33 +44,40 @@ public class WorkingSceneController implements StageAwareController {
 	@FXML
 	private MediaView mediaView;
 	
-	@Autowired
-	private ApplicationContext context;
-	@Autowired
-	private DirectoryCache directoryCache;
-	@Autowired
-	private PreferencesManager preferencesManager;
-	@Autowired
-	private MoveService moveService;
-	@Autowired
-	private SkipService skipService;
-	@Autowired
-	private UndoService undoService;
-	@Autowired
-	private EndService endService;
-	
 	private static final Logger log = LoggerFactory.getLogger(WorkingSceneController.class);
 	
+	private final DirectoryCache directoryCache;
+	private final PreferencesManager preferencesManager;
+	private final MoveService moveService;
+	private final SkipService skipService;
+	private final UndoService undoService;
+	private final EndService endService;
+	
+	// Cannot undo on first file
+	private boolean undoFlag = true;
+	private String[] directoryPathsCache;
 	private Stage stage;
-	private boolean undoFlag = true; // Cannot undo on first file
+	
+	@Autowired
+	public WorkingSceneController(DirectoryCache directoryCache, PreferencesManager preferencesManager, MoveService moveService, SkipService skipService, UndoService undoService, EndService endService) {
+		this.directoryCache = directoryCache;
+		this.preferencesManager = preferencesManager;
+		this.moveService = moveService;
+		this.skipService = skipService;
+		this.undoService = undoService;
+		this.endService = endService;
+	}
+	
+	// IDEA create object to hold all UI elements and pass to services?
 	
 	// Loads first file
-	public void init() throws FileNotFoundException {
+	public void init(String[] directoryPathsCache) throws FileNotFoundException {
+		this.directoryPathsCache = directoryPathsCache;
+		
 		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
-		workingDirectory.setText(preferencesManager.preferences.getProperty("defaultWorkingDirectory"));
-		targetDirectory.setText(preferencesManager.preferences.getProperty("defaultTargetDirectory"));
-		skipService.loadWorkingFile(imageView);
-		skipService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		workingDirectory.setText(directoryPathsCache[0]);
+		targetDirectory.setText(directoryPathsCache[1]);
+		skipService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
 	}
 	
 	public void move(ActionEvent event) throws IOException {
@@ -79,29 +85,34 @@ public class WorkingSceneController implements StageAwareController {
 		if (Boolean.parseBoolean(preferencesManager.preferences.getProperty("confirmMove")) &&
 				moveService.confirm(stage, "Move", "Move file?")) return;
 		
-		moveService.moveFile(fileRename.getText());
-		directoryCache.nextCachedIndex();
-		endService.endCheck(stage);
-		moveService.loadWorkingFile(imageView);
-		moveService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		try {
+			moveService.moveFile(fileRename.getText(), directoryPathsCache[1]);
+		} catch (Exception e) {
+			// If move fails, doesn't load next file
+			return;
+		}
+		
+		endService.endCheck(directoryPathsCache, stage);
+		moveService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
 		undoFlag = false;
 	}
 	
 	public void skip(ActionEvent event) throws IOException {
-		directoryCache.nextCachedIndex();
-		endService.endCheck(stage);
-		skipService.loadWorkingFile(imageView);
-		skipService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		// IDEA workingCache.setIsMove(false); would be the only place workingCache is used in class
+		skipService.skipFile();
+		endService.endCheck(directoryPathsCache, stage);
+		skipService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
 		undoFlag = false;
 	}
 	
 	public void undo(ActionEvent event) throws IOException {
-		if (undoFlag) return; // Prevent multiple undos
+		// Prevents multiple undos
+		if (undoFlag) return;
 		
+		// IDEA confirm undo?
 		directoryCache.previousCachedIndex();
-		undoService.moveFile(fileRename.getText());
-		undoService.loadWorkingFile(imageView);
-		undoService.updateUI(fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		undoService.undoAction();
+		undoService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
 		undoFlag = true;
 	}
 	
@@ -109,10 +120,8 @@ public class WorkingSceneController implements StageAwareController {
 		// Ends if YES is selected, continues if NO is selected
 		if (endService.confirm(stage, "End", "End sorting?")) return;
 		
-//		preferencesManager.preferences.setProperty("targetDirectory", targetDirectory.getText());
-//		preferencesManager.savePreferences(); // TODO cache current prefs, only save in prefs pane
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
-		endService.endCheck(stage);
+		endService.endCheck(directoryPathsCache, stage);
 	}
 	
 	@Override

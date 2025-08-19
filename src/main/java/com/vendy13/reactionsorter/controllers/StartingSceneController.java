@@ -1,7 +1,6 @@
 package com.vendy13.reactionsorter.controllers;
 
-import com.vendy13.reactionsorter.objects.DirectoryCache;
-import com.vendy13.reactionsorter.utils.PreferencesManager;
+import com.vendy13.reactionsorter.caches.DirectoryCache;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,30 +23,35 @@ public class StartingSceneController implements StageAwareController {
 	@FXML
 	private TextField targetDirectory;
 	
-	@Autowired
-	private ApplicationContext context;
-	@Autowired
-	private DirectoryCache directoryCache;
-	@Autowired
-	private PreferencesManager preferencesManager;
+	private final ApplicationContext context;
+	private final DirectoryCache directoryCache;
 	
+	// IDEA Cache?
+	private String[] directoryPathsCache;
 	private Stage stage;
 	
-	public void init() {
+	@Autowired
+	public StartingSceneController(ApplicationContext context, DirectoryCache directoryCache) {
+		this.context = context;
+		this.directoryCache = directoryCache;
+	}
+	
+	public void init(String[] directoryPathsCache) {
+		this.directoryPathsCache = directoryPathsCache;
+		
 		// TODO shorten directory paths for display
-		workingDirectory.setText(preferencesManager.preferences.getProperty("defaultWorkingDirectory"));
-		targetDirectory.setText(preferencesManager.preferences.getProperty("defaultTargetDirectory"));
+		workingDirectory.setText(directoryPathsCache[0]);
+		targetDirectory.setText(directoryPathsCache[1]);
 	}
 	
 	public void begin(ActionEvent event) throws IOException {
 		WorkingSceneController controller = SceneLoader.loadScene("/fxml/WorkingScene.fxml", stage, context);
 		
-		directoryCache.fetchDirectoryCache();
-		controller.init();
+		directoryCache.fetchDirectoryCache(directoryPathsCache[0]);
+		controller.init(directoryPathsCache);
 	}
 	
 	public void preferencesMenu(ActionEvent event) throws IOException {
-//		SceneLoader.loadScene("/fxml/PreferencesModal.fxml", stage, context);
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PreferencesModal.fxml"));
 		Parent root = loader.load();
 		

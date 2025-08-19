@@ -1,21 +1,23 @@
-package com.vendy13.reactionsorter.services;
+package com.vendy13.reactionsorter.utils;
 
 import com.vendy13.reactionsorter.controllers.StartingSceneController;
-import com.vendy13.reactionsorter.utils.FxSpringContextBridge;
-import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 public class FXApplicationService extends Application {
-	@Autowired
 	private ApplicationContext context;
+	private PreferencesManager preferencesManager;
 	
 	@Override
 	public void init() {
-		context = FxSpringContextBridge.getContext(); // Use injected context
+		// Use injected context
+		context = FxSpringContextBridge.getContext();
+		
+		// Fetch Spring-managed PreferencesManager bean
+		preferencesManager = context.getBean(PreferencesManager.class);
+		// IDEA WorkingCache here with included directories; intialize them just after
 	}
 	
 	@Override
@@ -25,7 +27,11 @@ public class FXApplicationService extends Application {
 		stage.setTitle("Reaction Sorter");
 		
 		StartingSceneController controller = SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
-		controller.init(); // Loads the default directories from preferences
+		
+		// Loads the default directories from preferences
+		String[] directoryPathsCache = {preferencesManager.preferences.getProperty("defaultWorkingDirectory"),
+				preferencesManager.preferences.getProperty("defaultTargetDirectory")};
+		controller.init(directoryPathsCache);
 	}
 	
 	@Override

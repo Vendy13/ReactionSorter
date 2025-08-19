@@ -89,7 +89,6 @@ public class PreferencesManager {
 	
 	public void savePreferences() {
 		// TODO Trigger upon save button click
-		// TODO Trigger on end for target directory update
 		try {
 			OutputStream out = Files.newOutputStream(prefPath);
 			preferences.store(out, "ReactionSorter Preferences");

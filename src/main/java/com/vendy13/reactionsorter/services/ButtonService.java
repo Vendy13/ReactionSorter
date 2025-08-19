@@ -1,8 +1,8 @@
 package com.vendy13.reactionsorter.services;
 
-import com.vendy13.reactionsorter.objects.DirectoryCache;
+import com.vendy13.reactionsorter.caches.DirectoryCache;
+import com.vendy13.reactionsorter.caches.WorkingCache;
 import com.vendy13.reactionsorter.objects.ReactionObject;
-import com.vendy13.reactionsorter.utils.PreferencesManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -11,12 +11,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -29,50 +28,51 @@ abstract class ButtonService {
 	 * Load next/prev file
 	 * Update cache
 	 */
+	private static final Logger log = LoggerFactory.getLogger(ButtonService.class);
 	
-	@Autowired
-	protected DirectoryCache directoryCache;
-	@Autowired
-	protected PreferencesManager preferencesManager;
+	protected final DirectoryCache directoryCache;
+	protected final WorkingCache workingCache;
 	
-	// TODO private variables and use getters/setters as needed
-	// TODO Preference configuration
-	protected String targetDirectory;
-	protected String workingDirectory;
-	protected ReactionObject undoCache;
-	
-	// TODO MediaView for videos :(
-	public void loadWorkingFile(ImageView imageView) throws FileNotFoundException {
-		ReactionObject workingFile = directoryCache.getDirectoryCache().get(directoryCache.getCachedIndex());
-		Image image = new Image(new FileInputStream(workingFile.filePath()));
-		imageView.setImage(image);
+	ButtonService(DirectoryCache directoryCache, WorkingCache workingCache) {
+		this.directoryCache = directoryCache;
+		this.workingCache = workingCache;
 	}
 	
-	// TODO actually move file
-	public void moveFile(String newFileName) throws IOException {
+	/* TODO MediaView for videos :(
+	 * MEDIAVIEW WILL HAVE TO BE LOADED IN A DIFFERENT WAY
+	 * Current option outlined below:
+	 * mediaPlayer.stop()
+	 * mediaPlayer.dispose()
+	 * Media is media file/stream
+	 * MediaPlayer is the actual player that maintains the file in use
+	 * MediaView is just the visual display component for the UI
+	 *
+	 * Alternate option using temp files, maybe be sluggish:
+	 * Create temp directory within same place as local preferences file
+	 * Copy video file to temp directory
+	 * Load MediaView with file from temp directory
+	 * Real file can be moved and renamed without being locked
+	 * Delete temp file when move is complete
+	 */
+	public void loadWorkingFile(ImageView imageView, Text fileDimensions, Text fileSize, Text fileType, Text workingFileIndex, TextField fileRename) {
 		int cachedIndex = directoryCache.getCachedIndex();
-		undoCache = directoryCache.getDirectoryCache().get(cachedIndex); // Cache current file state for Undo
-//		String newFilePath = targetDirectory + newFileName; // TODO check for end slash
-//		Files.move(Path.of(workingFile.filePath()), Path.of(newFilePath), StandardCopyOption.ATOMIC_MOVE);
-//		ReactionObject targetFile = new ReactionObject(
-//				newFileName,
-//				newFilePath,
-//				undoCache.fileExtension(),
-//				undoCache.fileType(),
-//				undoCache.fileDimensions(),
-//				undoCache.fileSize()
-//		);
-//		directoryCache.getDirectoryCache().replace(cachedIndex, targetFile);
-	}
-	
-	public void updateUI(Text fileDimensions, Text fileSize, Text fileType, Text workingFileIndex, TextField fileRename) {
-		int cachedIndex = directoryCache.getCachedIndex();
-		ReactionObject workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
+		ReactionObject workingFile = workingCache.setWorkingFile(directoryCache.getDirectoryCache().get(cachedIndex));
+		
+		// try-with-resources to ensure FileInputStream is closed and file can be moved
+		try (FileInputStream fis = new FileInputStream(workingFile.filePath())) {
+			Image image = new Image(fis);
+			imageView.setImage(image);
+		} catch (Exception e) {
+			log.error("Error loading file: {}", e.getMessage());
+		}
+		
 		workingFileIndex.setText(String.valueOf(cachedIndex + 1));
 		fileType.setText(workingFile.fileExtension());
 		fileDimensions.setText(workingFile.fileDimensions());
 		fileSize.setText(workingFile.fileSize() + "B");
 		fileRename.setText(workingFile.fileName());
+		
+		log.info("Working on file {} of {}", cachedIndex + 1, directoryCache.getDirectoryCache().size());
 	}
 	
 	public boolean confirm(Stage stage, String action, String message) {
@@ -95,6 +95,7 @@ abstract class ButtonService {
 		
 		Optional<ButtonType> result = confirm.showAndWait();
 		
-		return result.isPresent() && result.get() == ButtonType.NO; // NO to prevent inversion of return value
+		// NO to prevent inversion of return value
+		return result.isPresent() && result.get() == ButtonType.NO;
 	}
 }
