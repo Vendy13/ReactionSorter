@@ -1,14 +1,16 @@
 package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.caches.DirectoryCache;
-import com.vendy13.reactionsorter.services.EndService;
-import com.vendy13.reactionsorter.services.MoveService;
-import com.vendy13.reactionsorter.services.SkipService;
-import com.vendy13.reactionsorter.services.UndoService;
+import com.vendy13.reactionsorter.objects.ReactionObject;
+import com.vendy13.reactionsorter.services.ButtonService;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
@@ -18,8 +20,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class WorkingSceneController implements StageAwareController {
@@ -48,24 +52,23 @@ public class WorkingSceneController implements StageAwareController {
 	
 	private final DirectoryCache directoryCache;
 	private final PreferencesManager preferencesManager;
-	private final MoveService moveService;
-	private final SkipService skipService;
-	private final UndoService undoService;
-	private final EndService endService;
+	private final ButtonService buttonService;
+	
+	// TODO Preferences Config
 	
 	// Cannot undo on first file
 	private boolean undoFlag = true;
+	private boolean isMove = true;
 	private String[] directoryPathsCache;
+	private ReactionObject workingFile;
+	private ReactionObject undoCache;
 	private Stage stage;
 	
 	@Autowired
-	public WorkingSceneController(DirectoryCache directoryCache, PreferencesManager preferencesManager, MoveService moveService, SkipService skipService, UndoService undoService, EndService endService) {
+	public WorkingSceneController(DirectoryCache directoryCache, PreferencesManager preferencesManager, ButtonService buttonService) {
 		this.directoryCache = directoryCache;
 		this.preferencesManager = preferencesManager;
-		this.moveService = moveService;
-		this.skipService = skipService;
-		this.undoService = undoService;
-		this.endService = endService;
+		this.buttonService = buttonService;
 	}
 	
 	// IDEA create object to hold all UI elements and pass to services?
@@ -77,31 +80,32 @@ public class WorkingSceneController implements StageAwareController {
 		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
 		workingDirectory.setText(directoryPathsCache[0]);
 		targetDirectory.setText(directoryPathsCache[1]);
-		skipService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		loadWorkingFile();
 	}
 	
 	public void move(ActionEvent event) throws IOException {
 		// Only stops move if confirmMove is enabled and user selects NO
 		if (Boolean.parseBoolean(preferencesManager.preferences.getProperty("confirmMove")) &&
-				moveService.confirm(stage, "Move", "Move file?")) return;
+				confirm(stage, "Move", "Move file?")) return;
 		
 		try {
-			moveService.moveFile(fileRename.getText(), directoryPathsCache[1]);
+			buttonService.moveFile(fileRename.getText(), directoryPathsCache[1], workingFile);
+			undoCache = workingFile;
+			isMove = true;
 		} catch (Exception e) {
 			// If move fails, doesn't load next file
 			return;
 		}
 		
-		endService.endCheck(directoryPathsCache, stage);
-		moveService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		buttonService.endCheck(directoryPathsCache, stage);
+		loadWorkingFile();
 		undoFlag = false;
 	}
 	
 	public void skip(ActionEvent event) throws IOException {
-		// IDEA workingCache.setIsMove(false); would be the only place workingCache is used in class
-		skipService.skipFile();
-		endService.endCheck(directoryPathsCache, stage);
-		skipService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		isMove = false;
+		buttonService.endCheck(directoryPathsCache, stage);
+		loadWorkingFile();
 		undoFlag = false;
 	}
 	
@@ -111,17 +115,78 @@ public class WorkingSceneController implements StageAwareController {
 		
 		// IDEA confirm undo?
 		directoryCache.previousCachedIndex();
-		undoService.undoAction();
-		undoService.loadWorkingFile(imageView, fileDimensions, fileSize, fileType, workingFileIndex, fileRename);
+		buttonService.undoMove(isMove, undoCache);
+		loadWorkingFile();
 		undoFlag = true;
 	}
 	
 	public void end(ActionEvent event) throws IOException {
 		// Ends if YES is selected, continues if NO is selected
-		if (endService.confirm(stage, "End", "End sorting?")) return;
+		if (confirm(stage, "End", "End sorting?")) return;
 		
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
-		endService.endCheck(directoryPathsCache, stage);
+		buttonService.endCheck(directoryPathsCache, stage);
+	}
+	
+	/* TODO MediaView for videos :(
+	 * MEDIAVIEW WILL HAVE TO BE LOADED IN A DIFFERENT WAY
+	 * Current option outlined below:
+	 * mediaPlayer.stop()
+	 * mediaPlayer.dispose()
+	 * Media is media file/stream
+	 * MediaPlayer is the actual player that maintains the file in use
+	 * MediaView is just the visual display component for the UI
+	 *
+	 * Alternate option using temp files, maybe be sluggish:
+	 * Create temp directory within same place as local preferences file
+	 * Copy video file to temp directory
+	 * Load MediaView with file from temp directory
+	 * Real file can be moved and renamed without being locked
+	 * Delete temp file when move is complete
+	 */
+	public void loadWorkingFile() {
+		int cachedIndex = directoryCache.getCachedIndex();
+		workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
+		
+		// try-with-resources to ensure FileInputStream is closed and file can be moved
+		try (FileInputStream fis = new FileInputStream(workingFile.filePath())) {
+			Image image = new Image(fis);
+			imageView.setImage(image);
+		} catch (Exception e) {
+			log.error("Error loading file: {}", e.getMessage());
+		}
+		
+		workingFileIndex.setText(String.valueOf(cachedIndex + 1));
+		fileType.setText(workingFile.fileExtension());
+		fileDimensions.setText(workingFile.fileDimensions());
+		fileSize.setText(workingFile.fileSize() + "B");
+		fileRename.setText(workingFile.fileName()); // TODO no filetype for rename field
+		
+		log.info("Working on file {} of {}", cachedIndex + 1, directoryCache.getDirectoryCache().size());
+	}
+	
+	public boolean confirm(Stage stage, String action, String message) {
+		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+		confirm.setTitle("Confirm " + action);
+		confirm.setHeaderText(null);
+		confirm.setGraphic(null);
+		confirm.setContentText(message);
+		confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+		
+		// Modifies innate values of Alert stages
+		Platform.runLater(() -> {
+			Stage confirmStage = (Stage) confirm.getDialogPane().getScene().getWindow();
+			confirmStage.setIconified(false);
+			confirmStage.setWidth(230);
+			confirmStage.setHeight(120);
+			confirmStage.setX(stage.getX() + stage.getWidth()/2 - confirmStage.getWidth()/2);
+			confirmStage.setY(stage.getY() + stage.getHeight()/2 - confirmStage.getHeight()/2);
+		});
+		
+		Optional<ButtonType> result = confirm.showAndWait();
+		
+		// NO to prevent inversion of return value
+		return result.isPresent() && result.get() == ButtonType.NO;
 	}
 	
 	@Override
