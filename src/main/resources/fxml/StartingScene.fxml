@@ -52,7 +52,7 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem fx:id="preferencesMenu" mnemonicParsing="false" onAction="#preferencesMenu" text="Preferences…" />
+            <MenuItem fx:id="preferencesMenu" mnemonicParsing="false" text="Preferences…" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
@@ -94,7 +94,7 @@
                   </HBox>
                   <Pane prefHeight="500.0">
                      <children>
-                        <Button fx:id="begin" layoutX="365.0" layoutY="212.0" mnemonicParsing="false" onAction="#begin" text="Begin Sort" />
+                        <Button fx:id="beginButton" layoutX="365.0" layoutY="212.0" mnemonicParsing="false" text="Begin Sort" />
                      </children>
                      <opaqueInsets>
                         <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />

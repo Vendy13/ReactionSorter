@@ -21,10 +21,10 @@ public class PreferencesManager {
 	private static final String APP_DATA = System.getenv("LOCALAPPDATA");
 	private static final String USER_HOME = System.getProperty("user.home");
 	
-	private InputStream defaultPrefs = ClassLoader.getSystemResourceAsStream("preferences.properties");
-	private Path prefPath;
+	private final InputStream defaultPrefs = ClassLoader.getSystemResourceAsStream("preferences.properties");
+	private final Properties preferences = new Properties();
 	
-	public Properties preferences = new Properties();
+	private Path prefPath;
 	
 	@PostConstruct
 	public void init() {
@@ -88,12 +88,19 @@ public class PreferencesManager {
 	}
 	
 	public void savePreferences() {
-		// TODO Trigger upon save button click
 		try {
 			OutputStream out = Files.newOutputStream(prefPath);
 			preferences.store(out, "ReactionSorter Preferences");
 		} catch (IOException e) {
 			log.error("Error saving preferences: {}", e.getMessage());
 		}
+	}
+	
+	public String getPreference(String key) {
+		return preferences.getProperty(key, "");
+	}
+	
+	public void setPreference(String key, String value) {
+		preferences.setProperty(key, value);
 	}
 }

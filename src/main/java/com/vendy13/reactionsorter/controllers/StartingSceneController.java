@@ -2,14 +2,14 @@ package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.caches.DirectoryCache;
 import com.vendy13.reactionsorter.utils.SceneLoader;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -22,6 +22,12 @@ public class StartingSceneController implements StageAwareController {
 	private TextField workingDirectory;
 	@FXML
 	private TextField targetDirectory;
+	@FXML
+	private Button beginButton;
+	@FXML
+	private MenuItem preferencesMenu;
+	
+	private static final Logger log = LoggerFactory.getLogger(StartingSceneController.class);
 	
 	private final ApplicationContext context;
 	private final DirectoryCache directoryCache;
@@ -36,32 +42,43 @@ public class StartingSceneController implements StageAwareController {
 		this.directoryCache = directoryCache;
 	}
 	
+	@FXML
 	public void init(String[] directoryPathsCache) {
 		this.directoryPathsCache = directoryPathsCache;
+		
+		beginButton.setOnAction(event -> begin());
+		preferencesMenu.setOnAction(event -> preferencesMenu());
 		
 		// TODO shorten directory paths for display
 		workingDirectory.setText(directoryPathsCache[0]);
 		targetDirectory.setText(directoryPathsCache[1]);
 	}
 	
-	public void begin(ActionEvent event) throws IOException {
-		WorkingSceneController controller = SceneLoader.loadScene("/fxml/WorkingScene.fxml", stage, context);
-		
-		directoryCache.fetchDirectoryCache(directoryPathsCache[0]);
-		controller.init(directoryPathsCache);
+	private void begin() {
+		try {
+			WorkingSceneController controller = SceneLoader.loadScene("/fxml/WorkingScene.fxml", stage, context);
+			directoryCache.fetchDirectoryCache(directoryPathsCache[0]);
+			controller.init(directoryPathsCache);
+		} catch (IOException e) {
+			log.error("Error loading working scene: {}", e.getMessage());
+		}
 	}
 	
-	public void preferencesMenu(ActionEvent event) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PreferencesModal.fxml"));
-		Parent root = loader.load();
-		
-		Stage prefsStage = new Stage();
-		prefsStage.setTitle("Preferences");
-		prefsStage.setScene(new Scene(root));
-		prefsStage.initModality(Modality.APPLICATION_MODAL);
-		prefsStage.initOwner(stage);
-		
-		prefsStage.showAndWait();
+	private void preferencesMenu() {
+		try {
+			Stage prefsStage = new Stage();
+			prefsStage.setTitle("Preferences");
+			prefsStage.setResizable(false);
+			prefsStage.initModality(Modality.APPLICATION_MODAL);
+			prefsStage.initOwner(stage);
+			
+			PreferencesModalController controller = SceneLoader.loadScene("/fxml/PreferencesModal.fxml", prefsStage, context);
+			controller.init();
+			
+			prefsStage.showAndWait();
+		} catch (IOException e) {
+			log.error("Error loading preferences scene: {}", e.getMessage());
+		}
 	}
 	
 	@Override

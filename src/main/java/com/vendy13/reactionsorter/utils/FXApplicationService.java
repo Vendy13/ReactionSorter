@@ -4,9 +4,15 @@ import com.vendy13.reactionsorter.controllers.StartingSceneController;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.io.IOException;
+
 public class FXApplicationService extends Application {
+	private static final Logger log = LoggerFactory.getLogger(FXApplicationService.class);
+	
 	private ApplicationContext context;
 	private PreferencesManager preferencesManager;
 	
@@ -21,17 +27,21 @@ public class FXApplicationService extends Application {
 	}
 	
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		Image icon = new Image("images/vendyOhNo.png");
 		stage.getIcons().add(icon);
 		stage.setTitle("Reaction Sorter");
 		
-		StartingSceneController controller = SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
-		
-		// Loads the default directories from preferences
-		String[] directoryPathsCache = {preferencesManager.preferences.getProperty("defaultWorkingDirectory"),
-				preferencesManager.preferences.getProperty("defaultTargetDirectory")};
-		controller.init(directoryPathsCache);
+		try {
+			StartingSceneController controller = SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
+			
+			// Loads the default directories from preferences
+			String[] directoryPathsCache = {preferencesManager.getPreference("defaultWorkingDirectory"),
+					preferencesManager.getPreference("defaultTargetDirectory")};
+			controller.init(directoryPathsCache);
+		} catch (IOException e) {
+			log.error("Error initializing starting scene: {}", e.getMessage());
+		}
 	}
 	
 	@Override

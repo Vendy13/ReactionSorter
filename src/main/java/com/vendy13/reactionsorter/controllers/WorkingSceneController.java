@@ -5,9 +5,9 @@ import com.vendy13.reactionsorter.objects.ReactionObject;
 import com.vendy13.reactionsorter.services.ButtonService;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Optional;
 
 @Component
@@ -43,6 +42,14 @@ public class WorkingSceneController implements StageAwareController {
 	private TextField targetDirectory;
 	@FXML
 	private TextField fileRename;
+	@FXML
+	private Button moveButton;
+	@FXML
+	private Button skipButton;
+	@FXML
+	private Button undoButton;
+	@FXML
+	private Button endButton;
 	@FXML
 	private ImageView imageView;
 	@FXML
@@ -74,8 +81,14 @@ public class WorkingSceneController implements StageAwareController {
 	// IDEA create object to hold all UI elements and pass to services?
 	
 	// Loads first file
+	@FXML
 	public void init(String[] directoryPathsCache) throws FileNotFoundException {
 		this.directoryPathsCache = directoryPathsCache;
+		
+		moveButton.setOnAction(event -> move());
+		skipButton.setOnAction(event -> skip());
+		undoButton.setOnAction(event -> undo());
+		endButton.setOnAction(event -> end());
 		
 		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
 		workingDirectory.setText(directoryPathsCache[0]);
@@ -83,17 +96,19 @@ public class WorkingSceneController implements StageAwareController {
 		loadWorkingFile();
 	}
 	
-	public void move(ActionEvent event) throws IOException {
+	private void move() {
 		// Only stops move if confirmMove is enabled and user selects NO
-		if (Boolean.parseBoolean(preferencesManager.preferences.getProperty("confirmMove")) &&
+		if (Boolean.parseBoolean(preferencesManager.getPreference("confirmMove")) &&
 				confirm(stage, "Move", "Move file?")) return;
 		
 		try {
 			buttonService.moveFile(fileRename.getText(), directoryPathsCache[1], workingFile);
 			undoCache = workingFile;
+			
 			isMove = true;
 		} catch (Exception e) {
 			// If move fails, doesn't load next file
+			// TODO doesn't work, exception not passed from moveFile()?
 			return;
 		}
 		
@@ -102,14 +117,16 @@ public class WorkingSceneController implements StageAwareController {
 		undoFlag = false;
 	}
 	
-	public void skip(ActionEvent event) throws IOException {
+	private void skip() {
 		isMove = false;
+		
 		buttonService.endCheck(directoryPathsCache, stage);
 		loadWorkingFile();
+		
 		undoFlag = false;
 	}
 	
-	public void undo(ActionEvent event) throws IOException {
+	private void undo() {
 		// Prevents multiple undos
 		if (undoFlag) return;
 		
@@ -117,10 +134,11 @@ public class WorkingSceneController implements StageAwareController {
 		directoryCache.previousCachedIndex();
 		buttonService.undoMove(isMove, undoCache);
 		loadWorkingFile();
+		
 		undoFlag = true;
 	}
 	
-	public void end(ActionEvent event) throws IOException {
+	private void end() {
 		// Ends if YES is selected, continues if NO is selected
 		if (confirm(stage, "End", "End sorting?")) return;
 		
@@ -144,7 +162,7 @@ public class WorkingSceneController implements StageAwareController {
 	 * Real file can be moved and renamed without being locked
 	 * Delete temp file when move is complete
 	 */
-	public void loadWorkingFile() {
+	private void loadWorkingFile() {
 		int cachedIndex = directoryCache.getCachedIndex();
 		workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
 		
@@ -162,10 +180,10 @@ public class WorkingSceneController implements StageAwareController {
 		fileSize.setText(workingFile.fileSize() + "B");
 		fileRename.setText(workingFile.fileName()); // TODO no filetype for rename field
 		
-		log.info("Working on file {} of {}", cachedIndex + 1, directoryCache.getDirectoryCache().size());
+		log.info("Sorting file {} of {}", cachedIndex + 1, directoryCache.getDirectoryCache().size());
 	}
 	
-	public boolean confirm(Stage stage, String action, String message) {
+	private boolean confirm(Stage stage, String action, String message) {
 		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
 		confirm.setTitle("Confirm " + action);
 		confirm.setHeaderText(null);

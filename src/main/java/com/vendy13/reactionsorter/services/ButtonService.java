@@ -60,14 +60,18 @@ public class ButtonService {
 	}
 	
 	// IDEA add something in case of needing final undo
-	public void endCheck(String[] directoryPathsCache, Stage stage) throws IOException {
+	public void endCheck(String[] directoryPathsCache, Stage stage) {
 		directoryCache.nextCachedIndex();
 		
 		if (directoryCache.getCachedIndex() >= directoryCache.getDirectoryCache().size() - 1) {
 			log.info("End of directory reached.");
 			
-			StartingSceneController controller = SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
-			controller.init(directoryPathsCache);
+			try {
+				StartingSceneController controller = SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
+				controller.init(directoryPathsCache);
+			} catch (IOException e) {
+				log.error("Error loading starting scene: {}", e.getMessage());
+			}
 		}
 	}
 }

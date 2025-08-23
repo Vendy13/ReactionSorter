@@ -4,6 +4,7 @@ import com.vendy13.reactionsorter.controllers.StageAwareController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,8 @@ import java.io.IOException;
 public class SceneLoader {
 	public static <T> T loadScene(String fxmlPath, Stage stage, ApplicationContext context) throws IOException {
 		FXMLLoader loader = new FXMLLoader(SceneLoader.class.getResource(fxmlPath));
-		loader.setControllerFactory(context::getBean); // Spring-aware FXMLLoader
+		// Spring-aware FXMLLoader
+		loader.setControllerFactory(context::getBean);
 		Parent root = loader.load();
 		T controller = loader.getController();
 		
@@ -24,7 +26,9 @@ public class SceneLoader {
 		}
 		
 		stage.setScene(new Scene(root));
-		stage.show();
+		
+		// Modal stages manually use showAndWait()
+		if (stage.getModality() == Modality.NONE) stage.show();
 		
 		return controller;
 	}
