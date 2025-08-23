@@ -18,13 +18,15 @@ public class DirectoryCache {
 	private LinkedHashMap<Integer, ReactionObject> directoryCache;
 	
 	public void fetchDirectoryCache(String workingDirectory) {
-		cachedIndex = 0; // Reset index on new fetch
+		// Reset index on new fetch
+		cachedIndex = 0;
 		directoryCache = new LinkedHashMap<>();
 		
 		for (File file : new File(workingDirectory).listFiles()) {
-			String fileName = file.getName();
+			String fullName = file.getName();
+			String fileName = FilenameUtils.getBaseName(fullName);
 			String filePath = file.getAbsolutePath();
-			String fileExtension = FilenameUtils.getExtension(fileName).toUpperCase();
+			String fileExtension = FilenameUtils.getExtension(fullName);
 			FileType fileType = FileType.resolve(fileExtension);
 			String fileDimensions = fileType.getDimensions(file); // TODO Placeholder for dimensions, needs implementation
 			long fileSize = file.length();

@@ -102,7 +102,7 @@ public class WorkingSceneController implements StageAwareController {
 				confirm(stage, "Move", "Move file?")) return;
 		
 		try {
-			buttonService.moveFile(fileRename.getText(), directoryPathsCache[1], workingFile);
+			buttonService.moveFile(fileRename.getText() + "." + workingFile.fileExtension(), directoryPathsCache[1], workingFile);
 			undoCache = workingFile;
 			
 			isMove = true;
@@ -166,6 +166,7 @@ public class WorkingSceneController implements StageAwareController {
 		int cachedIndex = directoryCache.getCachedIndex();
 		workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
 		
+		// TODO Display generic file icon for unsupported file types
 		// try-with-resources to ensure FileInputStream is closed and file can be moved
 		try (FileInputStream fis = new FileInputStream(workingFile.filePath())) {
 			Image image = new Image(fis);
@@ -175,10 +176,10 @@ public class WorkingSceneController implements StageAwareController {
 		}
 		
 		workingFileIndex.setText(String.valueOf(cachedIndex + 1));
-		fileType.setText(workingFile.fileExtension());
+		fileType.setText(workingFile.fileExtension().toUpperCase());
 		fileDimensions.setText(workingFile.fileDimensions());
 		fileSize.setText(workingFile.fileSize() + "B");
-		fileRename.setText(workingFile.fileName()); // TODO no filetype for rename field
+		fileRename.setText(workingFile.fileName());
 		
 		log.info("Sorting file {} of {}", cachedIndex + 1, directoryCache.getDirectoryCache().size());
 	}

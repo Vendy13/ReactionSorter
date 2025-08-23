@@ -49,7 +49,7 @@ public class PreferencesModalController implements StageAwareController {
 	public void init() {
 		stage = (Stage) saveButton.getScene().getWindow();
 		
-		// TODO
+		// TODO Shorten directory paths for display
 		// Load preferences into modal
 		defaultWorkingDisplay.setText(preferencesManager.getPreference("defaultWorkingDirectory"));
 		defaultTargetDisplay.setText(preferencesManager.getPreference("defaultTargetDirectory"));
