@@ -1,7 +1,7 @@
 package com.vendy13.reactionsorter.utils;
 
 import jakarta.annotation.PostConstruct;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,6 +20,7 @@ public class PreferencesManager {
 	private static final String OS = System.getProperty("os.name");
 	private static final String APP_DATA = System.getenv("LOCALAPPDATA");
 	private static final String USER_HOME = System.getProperty("user.home");
+	private static final String SEPARATOR = System.getProperty("file.separator");
 	
 	private final InputStream defaultPrefs = ClassLoader.getSystemResourceAsStream("preferences.properties");
 	private final Properties preferences = new Properties();
@@ -34,11 +35,11 @@ public class PreferencesManager {
 	}
 	
 	public void setOS() {
-		if (StringUtils.containsIgnoreCase(OS, "win")) {
+		if (Strings.CI.contains(OS, "win")) {
 			prefPath = Paths.get(APP_DATA, "ReactionSorter", "preferences.properties");
-		} else if (StringUtils.containsIgnoreCase(OS,"mac")) {
+		} else if (Strings.CI.contains(OS,"mac")) {
 			prefPath = Paths.get(USER_HOME, "Library", "Application Support", "ReactionSorter", "preferences.properties");
-		} else if (StringUtils.containsIgnoreCase(OS, "nix") || StringUtils.containsIgnoreCase(OS, "nux")) {
+		} else if (Strings.CI.contains(OS, "nix") || Strings.CI.contains(OS, "nux")) {
 			prefPath = Paths.get(USER_HOME, ".config", "ReactionSorter", "preferences.properties");
 		} else {
 			throw new UnsupportedOperationException("Unsupported OS: " + OS);
@@ -102,5 +103,9 @@ public class PreferencesManager {
 	
 	public void setPreference(String key, String value) {
 		preferences.setProperty(key, value);
+	}
+	
+	public String getSeparator() {
+		return SEPARATOR;
 	}
 }

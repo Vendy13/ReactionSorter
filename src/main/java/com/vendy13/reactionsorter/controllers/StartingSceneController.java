@@ -1,6 +1,7 @@
 package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.caches.DirectoryCache;
+import com.vendy13.reactionsorter.utils.DirectoryFormatter;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -49,9 +50,9 @@ public class StartingSceneController implements StageAwareController {
 		beginButton.setOnAction(event -> begin());
 		preferencesMenu.setOnAction(event -> preferencesMenu());
 		
-		// TODO shorten directory paths for display
-		workingDirectory.setText(directoryPathsCache[0]);
-		targetDirectory.setText(directoryPathsCache[1]);
+		// TODO Tooltip for full paths
+		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
+		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
 	}
 	
 	private void begin() {

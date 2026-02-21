@@ -44,7 +44,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Text?>
@@ -95,19 +95,12 @@
                         </ButtonBar>
                      </children>
                   </HBox>
-                  <Pane prefHeight="500.0">
+                  <StackPane>
                      <children>
+                        <MediaView fx:id="mediaView" fitHeight="449.0" fitWidth="800.0"/>
                         <ImageView fx:id="imageView" fitHeight="449.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true" />
-                        <MediaView fx:id="mediaView" fitHeight="449.0" fitWidth="800.0">
-                           <viewport>
-                              <Rectangle2D />
-                           </viewport>
-                        </MediaView>
                      </children>
-                     <opaqueInsets>
-                        <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
-                     </opaqueInsets>
-                  </Pane>
+                  </StackPane>
                   <VBox>
                      <children>
                         <HBox alignment="CENTER" prefHeight="70.0" prefWidth="800.0" spacing="50.0">

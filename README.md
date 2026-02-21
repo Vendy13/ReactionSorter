@@ -1,5 +1,5 @@
 # Reaction Sorter
-A simple Spring Boot application for (hopefully) quicker sorting of reaction images and videos.
+A simple Spring Boot & JavaFX application for (hopefully) quicker sorting of reaction images and videos.
 
 Download latest version: [Download Link Goes Here](#)
 

@@ -1,8 +1,10 @@
 package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.caches.DirectoryCache;
+import com.vendy13.reactionsorter.enums.FileType;
 import com.vendy13.reactionsorter.objects.ReactionObject;
 import com.vendy13.reactionsorter.services.ButtonService;
+import com.vendy13.reactionsorter.utils.DirectoryFormatter;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -12,6 +14,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -20,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Optional;
@@ -91,8 +96,8 @@ public class WorkingSceneController implements StageAwareController {
 		endButton.setOnAction(event -> end());
 		
 		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
-		workingDirectory.setText(directoryPathsCache[0]);
-		targetDirectory.setText(directoryPathsCache[1]);
+		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
+		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
 		loadWorkingFile();
 	}
 	
@@ -146,6 +151,7 @@ public class WorkingSceneController implements StageAwareController {
 		buttonService.endCheck(directoryPathsCache, stage);
 	}
 	
+	// TODO VLCJ for unsupported codecs
 	/* TODO MediaView for videos :(
 	 * MEDIAVIEW WILL HAVE TO BE LOADED IN A DIFFERENT WAY
 	 * Current option outlined below:
@@ -166,14 +172,31 @@ public class WorkingSceneController implements StageAwareController {
 		int cachedIndex = directoryCache.getCachedIndex();
 		workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
 		
-		// TODO Display generic file icon for unsupported file types
-		// try-with-resources to ensure FileInputStream is closed and file can be moved
-		try (FileInputStream fis = new FileInputStream(workingFile.filePath())) {
-			Image image = new Image(fis);
-			imageView.setImage(image);
-		} catch (Exception e) {
-			log.error("Error loading file: {}", e.getMessage());
+		if (workingFile.fileType() == FileType.IMAGE) {
+			// try-with-resources to ensure FileInputStream is closed and file can be moved
+			try (FileInputStream fis = new FileInputStream(workingFile.filePath())) {
+				Image image = new Image(fis);
+				imageView.setImage(image);
+			} catch (Exception e) {
+				log.error("Error loading image file: {}", e.getMessage());
+			}
+		} else if (workingFile.fileType() == FileType.VIDEO) {
+			try {
+				File mediaFile = new File(workingFile.filePath());
+				String mediaUri = mediaFile.toURI().toString();
+				Media media = new Media(mediaUri);
+				MediaPlayer mediaPlayer = new MediaPlayer(media);
+				
+				mediaView.setMediaPlayer(mediaPlayer);
+//				mediaPlayer.play();
+			} catch (Exception e) {
+				log.error("Error loading video file: {}", e.getMessage());
+			}
+		} else {
+			Image defaultIcon = new Image("images/default_file.png");
+			imageView.setImage(defaultIcon);
 		}
+		
 		
 		workingFileIndex.setText(String.valueOf(cachedIndex + 1));
 		fileType.setText(workingFile.fileExtension().toUpperCase());

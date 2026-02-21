@@ -1,6 +1,7 @@
 package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.utils.PreferencesManager;
+import com.vendy13.reactionsorter.utils.DirectoryFormatter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -38,21 +39,25 @@ public class PreferencesModalController implements StageAwareController {
 	
 	private final PreferencesManager preferencesManager;
 	
+	private String defaultWorkingDirectory;
+	private String defaultTargetDirectory;
 	private Stage stage;
 	
 	@Autowired
 	public PreferencesModalController(PreferencesManager preferencesManager) {
 		this.preferencesManager = preferencesManager;
+		defaultWorkingDirectory = preferencesManager.getPreference("defaultWorkingDirectory");
+		defaultTargetDirectory = preferencesManager.getPreference("defaultTargetDirectory");
 	}
 	
 	@FXML
 	public void init() {
 		stage = (Stage) saveButton.getScene().getWindow();
 		
-		// TODO Shorten directory paths for display
+		// TODO Tooltip for full paths
 		// Load preferences into modal
-		defaultWorkingDisplay.setText(preferencesManager.getPreference("defaultWorkingDirectory"));
-		defaultTargetDisplay.setText(preferencesManager.getPreference("defaultTargetDirectory"));
+		defaultWorkingDisplay.setText(DirectoryFormatter.shortenDirectory(defaultWorkingDirectory));
+		defaultTargetDisplay.setText(DirectoryFormatter.shortenDirectory(defaultTargetDirectory));
 		confirmMove.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("confirmMove")));
 		autoplay.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("autoplay")));
 		persistentVolume.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("persistentVolume")));
@@ -64,8 +69,9 @@ public class PreferencesModalController implements StageAwareController {
 		cancelButton.setOnAction(event -> stage.close());
 	}
 	
+	// TODO make available for starting & working scenes
 	private void browseDirectories(boolean isTarget) {
-		String directory = isTarget ? preferencesManager.getPreference("defaultTargetDirectory") : preferencesManager.getPreference("defaultWorkingDirectory");
+		String directory = isTarget ? defaultTargetDirectory : defaultWorkingDirectory;
 		DirectoryChooser dirChooser = new DirectoryChooser();
 		dirChooser.setInitialDirectory(new File(directory));
 		dirChooser.setTitle("Select Default " + (isTarget ? "Target" : "Working") + " Directory");
@@ -73,9 +79,15 @@ public class PreferencesModalController implements StageAwareController {
 		
 		if (selectedDir != null) {
 			directory = selectedDir.getAbsolutePath();
+			
+			if (isTarget) {
+				defaultTargetDirectory = directory;
+			} else {
+				defaultWorkingDirectory = directory;
+			}
 		}
 		
-		(isTarget ? defaultTargetDisplay : defaultWorkingDisplay).setText(directory);
+		(isTarget ? defaultTargetDisplay : defaultWorkingDisplay).setText(DirectoryFormatter.shortenDirectory(directory));
 	}
 	
 	private void save() {

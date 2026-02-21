@@ -7,6 +7,7 @@
 	<groupId>com.vendy13</groupId>
 	<artifactId>ReactionSorter</artifactId>
 	<version>1.0-SNAPSHOT</version>
+<!-- IDEA Maven Release Plugin w/ GitFlow -->
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -20,6 +21,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<javafx.version>21.0.7</javafx.version>
 		<javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+		<commons-io.version>2.19.0</commons-io.version>
+		<commons-lang3.version>3.18.0</commons-lang3.version>
 	</properties>
 	
 	<dependencies>
@@ -46,19 +49,27 @@
 			<version>${javafx.version}</version>
 		</dependency>
 		
+		<!-- VLC -->
+		<dependency>
+			<groupId>uk.co.caprica</groupId>
+			<artifactId>vlcj</artifactId>
+			<version>4.11.0</version>
+		</dependency>
+		
 		<!-- Utils -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.19.0</version>
+			<version>${commons-io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.17.0</version>
+			<version>${commons-lang3.version}</version>
 		</dependency>
 	</dependencies>
 	
+<!-- TODO package into executable-type files -->
 	<build>
 		<plugins>
 			<plugin>
