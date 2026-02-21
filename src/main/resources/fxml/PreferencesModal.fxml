@@ -34,7 +34,7 @@
                <children>
                   <TextField fx:id="defaultWorkingDisplay" maxWidth="180.0" minWidth="150.0" prefWidth="175.0" promptText="Select Working Directory">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip fx:id="defaultWorkingTooltip" wrapText="true" />
                      </tooltip></TextField>
                   <Button fx:id="defaultWorkingChoose" mnemonicParsing="false" text="…" />
                </children>
@@ -42,7 +42,10 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Default Target Directory" GridPane.rowIndex="1" />
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <TextField fx:id="defaultTargetDisplay" maxWidth="180.0" minWidth="150.0" prefWidth="175.0" promptText="Select Target Directory" />
+                  <TextField fx:id="defaultTargetDisplay" maxWidth="180.0" minWidth="150.0" prefWidth="175.0" promptText="Select Target Directory">
+                     <tooltip>
+                        <Tooltip fx:id="defaultTargetTooltip" wrapText="true" />
+                     </tooltip></TextField>
                   <Button fx:id="defaultTargetChoose" mnemonicParsing="false" text="…" />
                </children>
             </HBox>

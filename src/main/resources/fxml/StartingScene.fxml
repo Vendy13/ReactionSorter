@@ -40,6 +40,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -70,7 +71,10 @@
                      <children>
                         <ButtonBar>
                            <buttons>
-                              <TextField fx:id="workingDirectory" promptText="Working Directory" />
+                              <TextField fx:id="workingDirectory" promptText="Working Directory">
+                                 <tooltip>
+                                    <Tooltip fx:id="workingTooltip" />
+                                 </tooltip></TextField>
                               <HBox alignment="CENTER">
                                  <children>
                                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
@@ -78,7 +82,10 @@
                                     <Text fx:id="cacheSize" strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
                                  </children>
                               </HBox>
-                              <TextField fx:id="targetDirectory" promptText="Target Directory" />
+                              <TextField fx:id="targetDirectory" promptText="Target Directory">
+                                 <tooltip>
+                                    <Tooltip fx:id="targetTooltip" />
+                                 </tooltip></TextField>
                               <SplitMenuButton disable="true" mnemonicParsing="false" text="SplitMenuButton">
                                 <items>
                                   <MenuItem mnemonicParsing="false" text="Action 1" />

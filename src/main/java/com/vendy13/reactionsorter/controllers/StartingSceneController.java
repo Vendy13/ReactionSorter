@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -25,6 +26,10 @@ public class StartingSceneController implements StageAwareController {
 	private TextField targetDirectory;
 	@FXML
 	private Button beginButton;
+	@FXML
+	private Tooltip workingTooltip;
+	@FXML
+	private Tooltip targetTooltip;
 	@FXML
 	private MenuItem preferencesMenu;
 	
@@ -50,9 +55,10 @@ public class StartingSceneController implements StageAwareController {
 		beginButton.setOnAction(event -> begin());
 		preferencesMenu.setOnAction(event -> preferencesMenu());
 		
-		// TODO Tooltip for full paths
 		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
 		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
+		workingTooltip.setText(directoryPathsCache[0]);
+		targetTooltip.setText(directoryPathsCache[1]);
 	}
 	
 	private void begin() {

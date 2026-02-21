@@ -3,10 +3,7 @@ package com.vendy13.reactionsorter.controllers;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
 import com.vendy13.reactionsorter.utils.DirectoryFormatter;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,28 +33,32 @@ public class PreferencesModalController implements StageAwareController {
 	private CheckBox persistentVolume;
 	@FXML
 	private Slider defaultVolume;
+	@FXML
+	private Tooltip defaultWorkingTooltip;
+	@FXML
+	private Tooltip defaultTargetTooltip;
 	
 	private final PreferencesManager preferencesManager;
 	
-	private String defaultWorkingDirectory;
-	private String defaultTargetDirectory;
 	private Stage stage;
 	
 	@Autowired
 	public PreferencesModalController(PreferencesManager preferencesManager) {
 		this.preferencesManager = preferencesManager;
-		defaultWorkingDirectory = preferencesManager.getPreference("defaultWorkingDirectory");
-		defaultTargetDirectory = preferencesManager.getPreference("defaultTargetDirectory");
 	}
 	
 	@FXML
 	public void init() {
 		stage = (Stage) saveButton.getScene().getWindow();
 		
-		// TODO Tooltip for full paths
+		String defaultWorkingDirectory = preferencesManager.getPreference("defaultWorkingDirectory");
+		String defaultTargetDirectory = preferencesManager.getPreference("defaultTargetDirectory");
+		
 		// Load preferences into modal
 		defaultWorkingDisplay.setText(DirectoryFormatter.shortenDirectory(defaultWorkingDirectory));
 		defaultTargetDisplay.setText(DirectoryFormatter.shortenDirectory(defaultTargetDirectory));
+		defaultWorkingTooltip.setText(defaultWorkingDirectory);
+		defaultTargetTooltip.setText(defaultTargetDirectory);
 		confirmMove.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("confirmMove")));
 		autoplay.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("autoplay")));
 		persistentVolume.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("persistentVolume")));
@@ -69,30 +70,23 @@ public class PreferencesModalController implements StageAwareController {
 		cancelButton.setOnAction(event -> stage.close());
 	}
 	
-	// TODO make available for starting & working scenes
+	// TODO make available for starting & working scenes(?)
 	private void browseDirectories(boolean isTarget) {
-		String directory = isTarget ? defaultTargetDirectory : defaultWorkingDirectory;
+		String directory = isTarget ? defaultTargetTooltip.getText() : defaultWorkingTooltip.getText();
 		DirectoryChooser dirChooser = new DirectoryChooser();
 		dirChooser.setInitialDirectory(new File(directory));
 		dirChooser.setTitle("Select Default " + (isTarget ? "Target" : "Working") + " Directory");
 		File selectedDir = dirChooser.showDialog(stage);
 		
-		if (selectedDir != null) {
-			directory = selectedDir.getAbsolutePath();
-			
-			if (isTarget) {
-				defaultTargetDirectory = directory;
-			} else {
-				defaultWorkingDirectory = directory;
-			}
-		}
+		if (selectedDir != null) directory = selectedDir.getAbsolutePath();
 		
 		(isTarget ? defaultTargetDisplay : defaultWorkingDisplay).setText(DirectoryFormatter.shortenDirectory(directory));
+		(isTarget ? defaultTargetTooltip : defaultWorkingTooltip).setText(directory);
 	}
 	
 	private void save() {
-		preferencesManager.setPreference("defaultWorkingDirectory", defaultWorkingDisplay.getText());
-		preferencesManager.setPreference("defaultTargetDirectory", defaultTargetDisplay.getText());
+		preferencesManager.setPreference("defaultWorkingDirectory", defaultWorkingTooltip.getText());
+		preferencesManager.setPreference("defaultTargetDirectory", defaultTargetTooltip.getText());
 		preferencesManager.setPreference("confirmMove", String.valueOf(confirmMove.isSelected()));
 		preferencesManager.setPreference("autoplay", String.valueOf(autoplay.isSelected()));
 		preferencesManager.setPreference("persistentVolume", String.valueOf(persistentVolume.isSelected()));

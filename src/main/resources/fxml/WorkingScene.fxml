@@ -33,7 +33,6 @@
 -->
 
 <?import javafx.geometry.Insets?>
-<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Menu?>
@@ -41,6 +40,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -73,7 +73,10 @@
                      <children>
                         <ButtonBar>
                            <buttons>
-                              <TextField fx:id="workingDirectory" editable="false" promptText="Working Directory" />
+                              <TextField fx:id="workingDirectory" disable="true" editable="false" promptText="Working Directory">
+                                 <tooltip>
+                                    <Tooltip fx:id="workingTooltip" />
+                                 </tooltip></TextField>
                               <HBox alignment="CENTER">
                                  <children>
                                     <Text fx:id="workingFileIndex" strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
@@ -81,7 +84,10 @@
                                     <Text fx:id="directoryCount" strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
                                  </children>
                               </HBox>
-                              <TextField fx:id="targetDirectory" promptText="Target Directory" />
+                              <TextField fx:id="targetDirectory" promptText="Target Directory">
+                                 <tooltip>
+                                    <Tooltip fx:id="targetTooltip" />
+                                 </tooltip></TextField>
                               <SplitMenuButton mnemonicParsing="false" text="SplitMenuButton">
                                 <items>
                                   <MenuItem mnemonicParsing="false" text="Action 1" />
@@ -97,7 +103,7 @@
                   </HBox>
                   <StackPane>
                      <children>
-                        <MediaView fx:id="mediaView" fitHeight="449.0" fitWidth="800.0"/>
+                        <MediaView fx:id="mediaView" fitHeight="449.0" fitWidth="800.0" />
                         <ImageView fx:id="imageView" fitHeight="449.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </StackPane>

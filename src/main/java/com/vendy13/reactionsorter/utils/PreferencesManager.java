@@ -20,7 +20,6 @@ public class PreferencesManager {
 	private static final String OS = System.getProperty("os.name");
 	private static final String APP_DATA = System.getenv("LOCALAPPDATA");
 	private static final String USER_HOME = System.getProperty("user.home");
-	private static final String SEPARATOR = System.getProperty("file.separator");
 	
 	private final InputStream defaultPrefs = ClassLoader.getSystemResourceAsStream("preferences.properties");
 	private final Properties preferences = new Properties();
@@ -103,9 +102,5 @@ public class PreferencesManager {
 	
 	public void setPreference(String key, String value) {
 		preferences.setProperty(key, value);
-	}
-	
-	public String getSeparator() {
-		return SEPARATOR;
 	}
 }

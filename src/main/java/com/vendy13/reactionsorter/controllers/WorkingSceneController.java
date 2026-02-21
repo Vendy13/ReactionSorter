@@ -8,10 +8,7 @@ import com.vendy13.reactionsorter.utils.DirectoryFormatter;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
@@ -56,6 +53,10 @@ public class WorkingSceneController implements StageAwareController {
 	@FXML
 	private Button endButton;
 	@FXML
+	private Tooltip workingTooltip;
+	@FXML
+	private Tooltip targetTooltip;
+	@FXML
 	private ImageView imageView;
 	@FXML
 	private MediaView mediaView;
@@ -98,6 +99,8 @@ public class WorkingSceneController implements StageAwareController {
 		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
 		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
 		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
+		workingTooltip.setText(directoryPathsCache[0]);
+		targetTooltip.setText(directoryPathsCache[1]);
 		loadWorkingFile();
 	}
 	
