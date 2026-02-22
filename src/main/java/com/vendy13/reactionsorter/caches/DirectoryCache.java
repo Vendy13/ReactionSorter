@@ -2,6 +2,7 @@ package com.vendy13.reactionsorter.caches;
 
 import com.vendy13.reactionsorter.enums.FileType;
 import com.vendy13.reactionsorter.objects.ReactionObject;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class DirectoryCache {
 			String fileExtension = FilenameUtils.getExtension(fullName);
 			FileType fileType = FileType.resolve(fileExtension);
 			String fileDimensions = fileType.getDimensions(file); // TODO Placeholder for dimensions, needs implementation
-			long fileSize = file.length();
+			String fileSize = FileUtils.byteCountToDisplaySize(file.length());
 			
 			ReactionObject reactionObject = new ReactionObject(fileName, filePath, fileExtension, fileType, fileDimensions, fileSize);
 			directoryCache.put(directoryCache.size(), reactionObject);

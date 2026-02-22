@@ -1,9 +1,10 @@
 package com.vendy13.reactionsorter.controllers;
 
-import com.vendy13.reactionsorter.utils.PreferencesManager;
 import com.vendy13.reactionsorter.utils.DirectoryFormatter;
+import com.vendy13.reactionsorter.utils.PreferencesManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import java.io.File;
 
 @Component
 public class PreferencesModalController implements StageAwareController {
+	@FXML
+	private Text defaultVolume;
 	@FXML
 	private TextField defaultWorkingDisplay;
 	@FXML
@@ -32,7 +35,7 @@ public class PreferencesModalController implements StageAwareController {
 	@FXML
 	private CheckBox persistentVolume;
 	@FXML
-	private Slider defaultVolume;
+	private Slider defaultVolumeSlider;
 	@FXML
 	private Tooltip defaultWorkingTooltip;
 	@FXML
@@ -62,12 +65,17 @@ public class PreferencesModalController implements StageAwareController {
 		confirmMove.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("confirmMove")));
 		autoplay.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("autoplay")));
 		persistentVolume.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("persistentVolume")));
-		defaultVolume.setValue(Double.parseDouble(preferencesManager.getPreference("defaultVolume")));
+		defaultVolumeSlider.setValue(Double.parseDouble(preferencesManager.getPreference("defaultVolume")));
+		defaultVolume.setText(preferencesManager.getPreference("defaultVolume"));
 		
 		defaultWorkingChoose.setOnAction(event -> browseDirectories(false));
 		defaultTargetChoose.setOnAction(event -> browseDirectories(true));
 		saveButton.setOnAction(event -> save());
 		cancelButton.setOnAction(event -> stage.close());
+		
+		defaultVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+			defaultVolume.setText(String.valueOf((int) defaultVolumeSlider.getValue()));
+		});
 	}
 	
 	// TODO make available for starting & working scenes(?)
@@ -90,7 +98,7 @@ public class PreferencesModalController implements StageAwareController {
 		preferencesManager.setPreference("confirmMove", String.valueOf(confirmMove.isSelected()));
 		preferencesManager.setPreference("autoplay", String.valueOf(autoplay.isSelected()));
 		preferencesManager.setPreference("persistentVolume", String.valueOf(persistentVolume.isSelected()));
-		preferencesManager.setPreference("defaultVolume", String.valueOf((int) defaultVolume.getValue()));
+		preferencesManager.setPreference("defaultVolume", String.valueOf((int) defaultVolumeSlider.getValue()));
 		preferencesManager.savePreferences();
 		
 		stage.close();

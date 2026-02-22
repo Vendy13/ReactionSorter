@@ -73,7 +73,7 @@
                      <children>
                         <ButtonBar>
                            <buttons>
-                              <TextField fx:id="workingDirectory" disable="true" editable="false" promptText="Working Directory">
+                              <TextField fx:id="workingDirectory" editable="false" promptText="Working Directory">
                                  <tooltip>
                                     <Tooltip fx:id="workingTooltip" />
                                  </tooltip></TextField>

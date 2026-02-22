@@ -8,7 +8,7 @@ public record ReactionObject(
 		String fileExtension,
 		FileType fileType,
 		String fileDimensions,
-		long fileSize
+		String fileSize
 ) {
 	public ReactionObject move(String newFileName, String newFilePath) {
 		return new ReactionObject(

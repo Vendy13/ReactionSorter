@@ -56,7 +56,12 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Persistent Volume" GridPane.rowIndex="4" />
             <CheckBox fx:id="persistentVolume" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Default Volume" GridPane.rowIndex="5" />
-            <Slider fx:id="defaultVolume" maxWidth="150.0" minWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <children>
+                  <Slider fx:id="defaultVolumeSlider" blockIncrement="5.0" maxWidth="150.0" minWidth="150.0" minorTickCount="5" />
+                  <Text fx:id="defaultVolume" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+               </children>
+            </HBox>
             <Button fx:id="saveButton" mnemonicParsing="false" text="Save" GridPane.rowIndex="6" />
             <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="6" />
          </children>

@@ -204,7 +204,7 @@ public class WorkingSceneController implements StageAwareController {
 		workingFileIndex.setText(String.valueOf(cachedIndex + 1));
 		fileType.setText(workingFile.fileExtension().toUpperCase());
 		fileDimensions.setText(workingFile.fileDimensions());
-		fileSize.setText(workingFile.fileSize() + "B");
+		fileSize.setText(workingFile.fileSize());
 		fileRename.setText(workingFile.fileName());
 		
 		log.info("Sorting file {} of {}", cachedIndex + 1, directoryCache.getDirectoryCache().size());
