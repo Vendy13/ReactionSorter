@@ -63,7 +63,7 @@ public class ButtonService {
 	public void endCheck(String[] directoryPathsCache, Stage stage) {
 		directoryCache.nextCachedIndex();
 		
-		if (directoryCache.getCachedIndex() >= directoryCache.getDirectoryCache().size() - 1) {
+		if (directoryCache.getCachedIndex() >= directoryCache.getDirectoryCache().size()) {
 			log.info("End of directory reached.");
 			
 			try {

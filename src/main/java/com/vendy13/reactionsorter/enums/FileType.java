@@ -33,7 +33,7 @@ public enum FileType {
 	OTHER {
 		@Override
 		public String getDimensions(File file) {
-			return null;
+			return "N/A";
 		}
 	};
 	
@@ -44,9 +44,6 @@ public enum FileType {
 			Map.entry("JPG", IMAGE),
 			Map.entry("JPEG", IMAGE),
 			Map.entry("PNG", IMAGE),
-			Map.entry("TIF", IMAGE),
-			Map.entry("TIFF", IMAGE),
-			Map.entry("WEBP", IMAGE),
 			Map.entry("GIF", IMAGE),
 			Map.entry("MP4", VIDEO),
 			Map.entry("WEBM", VIDEO)
@@ -56,6 +53,7 @@ public enum FileType {
 		return EXT_TYPE_MAP.getOrDefault(extension.toUpperCase(), OTHER);
 	}
 	
+	// IDEA TwelveMonkeys ImageIO plugin to support more formats and get dimensions without loading image into memory
 	/**
 	 * <a href="https://stackoverflow.com/a/12164026/17563958">...</a>
 	 * Gets image dimensions for given file

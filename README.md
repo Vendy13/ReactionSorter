@@ -6,8 +6,9 @@ Download latest version: [Download Link Goes Here](#)
 ## Features
 ### Display
 - Displays images and videos from Working Directory
+  - Hover over clipped directories to show full path in tooltip
 - Images
-  - JPG/JPEG, PNG, GIF
+  - JPG/JPEG, PNG, BMP, GIF
 - Videos
   - MP4, WEBM
   - Seekbar with time elapsed/remaining
