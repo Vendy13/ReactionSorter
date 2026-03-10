@@ -43,8 +43,6 @@ public class WorkingSceneController implements StageAwareController {
 	private TextField targetDirectory;
 	@FXML
 	private TextField fileRename;
-	//	@FXML
-//	private Button workingChoose;
 	@FXML
 	private Button targetChoose;
 	@FXML
@@ -114,8 +112,6 @@ public class WorkingSceneController implements StageAwareController {
 		undoButton.setOnAction(event -> undo());
 		endButton.setOnAction(event -> end());
 
-//		workingChoose.setOnAction(event -> this.directoryPathsCache[0] =
-//				DirectoryUtils.chooseDirectories(false, false, workingDirectory, workingTooltip, stage));
 		targetChoose.setOnAction(event -> this.directoryPathsCache[1] =
 				DirectoryUtils.chooseDirectories(false, true, targetDirectory, targetTooltip, stage));
 		

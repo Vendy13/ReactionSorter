@@ -64,6 +64,7 @@ public enum FileType {
 	public static Dimension getImageDimension(File imgFile) throws IOException {
 		String extension = FilenameUtils.getExtension(imgFile.getAbsolutePath());
 		Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(extension);
+		
 		while (iter.hasNext()) {
 			ImageReader reader = iter.next();
 			try {
@@ -71,6 +72,8 @@ public enum FileType {
 				reader.setInput(stream);
 				int width = reader.getWidth(reader.getMinIndex());
 				int height = reader.getHeight(reader.getMinIndex());
+				
+				stream.close();
 				return new Dimension(width, height);
 			} catch (IOException e) {
 				throw new IOException("Error reading: " + imgFile.getAbsolutePath(), e);
