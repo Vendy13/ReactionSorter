@@ -1,7 +1,9 @@
 package com.vendy13.reactionsorter.utils;
 
+import java.nio.file.FileSystems;
+
 public class DirectoryFormatter {
-	private static final String SEPARATOR = System.getProperty("file.separator");
+	private static final String SEPARATOR = FileSystems.getDefault().getSeparator();
 	
 	public static String shortenDirectory(String directory) {
 		return ".." + directory.substring(nthLastIndexOf(2, SEPARATOR, directory));

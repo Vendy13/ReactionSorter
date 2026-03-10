@@ -40,9 +40,13 @@ public enum FileType {
 	public abstract String getDimensions(File file);
 	
 	private static final Map<String, FileType> EXT_TYPE_MAP = Map.ofEntries(
+			Map.entry("BMP", IMAGE),
 			Map.entry("JPG", IMAGE),
 			Map.entry("JPEG", IMAGE),
 			Map.entry("PNG", IMAGE),
+			Map.entry("TIF", IMAGE),
+			Map.entry("TIFF", IMAGE),
+			Map.entry("WEBP", IMAGE),
 			Map.entry("GIF", IMAGE),
 			Map.entry("MP4", VIDEO),
 			Map.entry("WEBM", VIDEO)

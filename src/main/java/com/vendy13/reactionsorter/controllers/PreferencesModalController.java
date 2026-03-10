@@ -73,9 +73,8 @@ public class PreferencesModalController implements StageAwareController {
 		saveButton.setOnAction(event -> save());
 		cancelButton.setOnAction(event -> stage.close());
 		
-		defaultVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-			defaultVolume.setText(String.valueOf((int) defaultVolumeSlider.getValue()));
-		});
+		defaultVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+				defaultVolume.setText(String.valueOf((int) defaultVolumeSlider.getValue())));
 	}
 	
 	// TODO make available for starting & working scenes(?)

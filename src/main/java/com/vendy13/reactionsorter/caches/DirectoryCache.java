@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 @Component
 public class DirectoryCache {
@@ -23,7 +24,7 @@ public class DirectoryCache {
 		cachedIndex = 0;
 		directoryCache = new LinkedHashMap<>();
 		
-		for (File file : new File(workingDirectory).listFiles()) {
+		for (File file : Objects.requireNonNull(new File(workingDirectory).listFiles())) {
 			String fullName = file.getName();
 			String fileName = FilenameUtils.getBaseName(fullName);
 			String filePath = file.getAbsolutePath();

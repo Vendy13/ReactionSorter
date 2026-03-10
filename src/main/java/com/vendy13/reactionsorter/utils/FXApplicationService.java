@@ -23,7 +23,7 @@ public class FXApplicationService extends Application {
 		
 		// Fetch Spring-managed PreferencesManager bean
 		preferencesManager = context.getBean(PreferencesManager.class);
-		// IDEA WorkingCache here with included directories; intialize them just after
+		// IDEA WorkingCache here with included directories; initialize them just after
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class FXApplicationService extends Application {
 			try {
 				closable.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("Error stopping: {}", e.getMessage());
 			}
 		}
 	}

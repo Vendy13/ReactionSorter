@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Optional;
 
 @Component
@@ -92,7 +91,7 @@ public class WorkingSceneController implements StageAwareController {
 	
 	// Loads first file
 	@FXML
-	public void init(String[] directoryPathsCache) throws FileNotFoundException {
+	public void init(String[] directoryPathsCache) {
 		this.directoryPathsCache = directoryPathsCache;
 		
 		moveButton.setOnAction(event -> move());
