@@ -34,11 +34,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -67,37 +65,33 @@
       <children>
             <VBox prefHeight="575.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <HBox alignment="CENTER" prefHeight="56.0" prefWidth="800.0">
+                  <HBox alignment="CENTER" prefHeight="45.0" prefWidth="800.0" spacing="40.0">
                      <children>
-                        <ButtonBar>
-                           <buttons>
-                              <TextField fx:id="workingDirectory" promptText="Working Directory">
+                        <HBox>
+                           <children>
+                              <TextField fx:id="workingDirectory" prefWidth="180.0" promptText="Working Directory">
                                  <tooltip>
                                     <Tooltip fx:id="workingTooltip" />
-                                 </tooltip></TextField>
-                              <HBox alignment="CENTER">
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" of " />
-                                    <Text fx:id="cacheSize" strokeType="OUTSIDE" strokeWidth="0.0" text="???" />
-                                 </children>
-                              </HBox>
-                              <TextField fx:id="targetDirectory" promptText="Target Directory">
+                                 </tooltip>
+                              </TextField>
+                              <Button fx:id="workingChoose" mnemonicParsing="false" text="…" />
+                           </children>
+                        </HBox>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="??? of ???" textAlignment="JUSTIFY" />
+                        <HBox>
+                           <children>
+                              <TextField fx:id="targetDirectory" prefWidth="180.0" promptText="Target Directory">
                                  <tooltip>
                                     <Tooltip fx:id="targetTooltip" />
-                                 </tooltip></TextField>
-                              <SplitMenuButton disable="true" mnemonicParsing="false" text="SplitMenuButton">
-                                <items>
-                                  <MenuItem mnemonicParsing="false" text="Action 1" />
-                                  <MenuItem mnemonicParsing="false" text="Action 2" />
-                                </items>
-                              </SplitMenuButton>
-                           </buttons>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </ButtonBar>
+                                 </tooltip>
+                              </TextField>
+                              <Button fx:id="targetChoose" mnemonicParsing="false" text="…" />
+                           </children>
+                        </HBox>
                      </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
                   </HBox>
                   <StackPane prefHeight="500.0" VBox.vgrow="ALWAYS">
                      <children>

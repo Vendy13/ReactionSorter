@@ -39,9 +39,7 @@ public class WorkingSceneController implements StageAwareController {
 	@FXML
 	private Text fileType;
 	@FXML
-	private Text directoryCount;
-	@FXML
-	private Text workingFileIndex;
+	private Text fileIndex;
 	@FXML
 	private TextField workingDirectory;
 	@FXML
@@ -105,7 +103,6 @@ public class WorkingSceneController implements StageAwareController {
 		endButton.setOnAction(event -> end());
 		preferencesMenu.setOnAction(event -> preferencesMenu());
 		
-		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
 		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
 		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
 		workingTooltip.setText(directoryPathsCache[0]);
@@ -231,8 +228,7 @@ public class WorkingSceneController implements StageAwareController {
 			imageView.setImage(defaultIcon);
 		}
 		
-		
-		workingFileIndex.setText(String.valueOf(cachedIndex + 1));
+		fileIndex.setText(cachedIndex + 1 + " of " + directoryCache.getDirectoryCache().size());
 		fileType.setText(workingFile.fileExtension().toUpperCase());
 		fileDimensions.setText(workingFile.fileDimensions());
 		fileSize.setText(workingFile.fileSize());
