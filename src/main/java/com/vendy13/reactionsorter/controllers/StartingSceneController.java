@@ -61,9 +61,12 @@ public class StartingSceneController implements StageAwareController {
 		targetTooltip.setText(directoryPathsCache[1]);
 	}
 	
-	// TODO Maintain window resize on scene switch
 	private void begin() {
 		try {
+			// Maintains window resize on scene switch
+			stage.setWidth(stage.getWidth());
+			stage.setHeight(stage.getHeight());
+			
 			WorkingSceneController controller = SceneLoader.loadScene("/fxml/WorkingScene.fxml", stage, context);
 			directoryCache.fetchDirectoryCache(directoryPathsCache[0]);
 			controller.init(directoryPathsCache);

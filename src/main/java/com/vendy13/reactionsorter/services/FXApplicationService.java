@@ -1,6 +1,9 @@
-package com.vendy13.reactionsorter.utils;
+package com.vendy13.reactionsorter.services;
 
 import com.vendy13.reactionsorter.controllers.StartingSceneController;
+import com.vendy13.reactionsorter.utils.FxSpringContextBridge;
+import com.vendy13.reactionsorter.utils.PreferencesManager;
+import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
