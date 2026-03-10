@@ -48,119 +48,119 @@
 <?import javafx.scene.text.Text?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vendy13.reactionsorter.controllers.WorkingSceneController">
-  <children>
-    <MenuBar VBox.vgrow="NEVER">
-      <menus>
-        <Menu mnemonicParsing="false" text="File">
-          <items>
-            <MenuItem fx:id="preferencesMenu" mnemonicParsing="false" text="Preferences…" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About Reaction Sorter" />
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" VBox.vgrow="ALWAYS">
-      <children>
-            <VBox prefHeight="575.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="45.0" prefWidth="800.0" spacing="40.0">
-                     <children>
-                        <HBox>
-                           <children>
-                              <TextField fx:id="workingDirectory" prefWidth="180.0" promptText="Working Directory">
-                                 <tooltip>
-                                    <Tooltip fx:id="workingTooltip" />
-                                 </tooltip>
-                              </TextField>
-                              <Button fx:id="workingChoose" mnemonicParsing="false" text="…" />
-                           </children>
-                        </HBox>
-                        <Text fx:id="fileIndex" strokeType="OUTSIDE" strokeWidth="0.0" text="??? of ???" textAlignment="JUSTIFY" />
-                        <HBox>
-                           <children>
-                              <TextField fx:id="targetDirectory" prefWidth="180.0" promptText="Target Directory">
-                                 <tooltip>
-                                    <Tooltip fx:id="targetTooltip" />
-                                 </tooltip>
-                              </TextField>
-                              <Button fx:id="targetChoose" mnemonicParsing="false" text="…" />
-                           </children>
-                        </HBox>
-                     </children>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </HBox>
-                  <StackPane fx:id="stackPane" minHeight="0.0" minWidth="0.0" prefHeight="500.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <MediaView fx:id="mediaView" />
-                        <ImageView fx:id="imageView" preserveRatio="true" />
-                     </children>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </StackPane>
-                  <VBox prefHeight="81.0" prefWidth="800.0">
-                     <children>
-                        <HBox alignment="CENTER" prefHeight="70.0" prefWidth="800.0" spacing="50.0">
-                           <children>
-                              <HBox spacing="3.0">
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Type:" />
-                                    <Text fx:id="fileType" strokeType="OUTSIDE" strokeWidth="0.0" />
-                                 </children>
-                              </HBox>
-                              <HBox spacing="3.0">
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dimensions:" />
-                                    <Text fx:id="fileDimensions" strokeType="OUTSIDE" strokeWidth="0.0" />
-                                 </children>
-                              </HBox>
-                              <HBox spacing="3.0">
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Size:" />
-                                    <Text fx:id="fileSize" strokeType="OUTSIDE" strokeWidth="0.0" />
-                                 </children>
-                              </HBox>
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </HBox>
-                        <HBox alignment="CENTER" prefHeight="0.0" prefWidth="800.0" spacing="10.0">
-                           <children>
-                              <HBox>
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="File Name:">
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="3.0" />
-                                       </HBox.margin>
-                                    </Text>
-                                    <TextField fx:id="fileRename" prefHeight="25.0" prefWidth="250.0" promptText="Rename File" />
-                                 </children>
-                              </HBox>
-                              <Button fx:id="moveButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Move">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </Button>
-                              <Button fx:id="skipButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Skip" />
-                              <Button fx:id="undoButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Undo" />
-                              <Button fx:id="endButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="End" />
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-      </children>
-    </AnchorPane>
-  </children>
+	<children>
+		<MenuBar VBox.vgrow="NEVER">
+			<menus>
+				<Menu mnemonicParsing="false" text="File">
+					<items>
+						<MenuItem fx:id="preferencesMenu" mnemonicParsing="false" text="Preferences…" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Help">
+					<items>
+						<MenuItem mnemonicParsing="false" text="About Reaction Sorter" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+		<AnchorPane maxHeight="-1.0" maxWidth="-1.0" VBox.vgrow="ALWAYS">
+			<children>
+				<VBox prefHeight="575.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+					<children>
+						<HBox alignment="CENTER" prefHeight="45.0" prefWidth="800.0" spacing="40.0">
+							<children>
+								<HBox>
+									<children>
+										<TextField fx:id="workingDirectory" editable="false" prefWidth="180.0" promptText="Working Directory">
+											<tooltip>
+												<Tooltip fx:id="workingTooltip" />
+											</tooltip>
+										</TextField>
+										<Button disable="true" mnemonicParsing="false" text="…" />
+									</children>
+								</HBox>
+								<Text fx:id="fileIndex" strokeType="OUTSIDE" strokeWidth="0.0" text="??? of ???" textAlignment="JUSTIFY" />
+								<HBox>
+									<children>
+										<TextField fx:id="targetDirectory" prefWidth="180.0" promptText="Target Directory">
+											<tooltip>
+												<Tooltip fx:id="targetTooltip" />
+											</tooltip>
+										</TextField>
+										<Button fx:id="targetChoose" mnemonicParsing="false" text="…" />
+									</children>
+								</HBox>
+							</children>
+							<padding>
+								<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+							</padding>
+						</HBox>
+						<StackPane fx:id="stackPane" minHeight="0.0" minWidth="0.0" prefHeight="500.0" VBox.vgrow="ALWAYS">
+							<children>
+								<MediaView fx:id="mediaView" />
+								<ImageView fx:id="imageView" preserveRatio="true" />
+							</children>
+							<VBox.margin>
+								<Insets />
+							</VBox.margin>
+						</StackPane>
+						<VBox prefHeight="81.0" prefWidth="800.0">
+							<children>
+								<HBox alignment="CENTER" prefHeight="70.0" prefWidth="800.0" spacing="50.0">
+									<children>
+										<HBox spacing="3.0">
+											<children>
+												<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Type:" />
+												<Text fx:id="fileType" strokeType="OUTSIDE" strokeWidth="0.0" />
+											</children>
+										</HBox>
+										<HBox spacing="3.0">
+											<children>
+												<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dimensions:" />
+												<Text fx:id="fileDimensions" strokeType="OUTSIDE" strokeWidth="0.0" />
+											</children>
+										</HBox>
+										<HBox spacing="3.0">
+											<children>
+												<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Size:" />
+												<Text fx:id="fileSize" strokeType="OUTSIDE" strokeWidth="0.0" />
+											</children>
+										</HBox>
+									</children>
+									<padding>
+										<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+									</padding>
+								</HBox>
+								<HBox alignment="CENTER" prefHeight="0.0" prefWidth="800.0" spacing="10.0">
+									<children>
+										<HBox>
+											<children>
+												<Text strokeType="OUTSIDE" strokeWidth="0.0" text="File Name:">
+													<HBox.margin>
+														<Insets bottom="5.0" left="5.0" right="5.0" top="3.0" />
+													</HBox.margin>
+												</Text>
+												<TextField fx:id="fileRename" prefHeight="25.0" prefWidth="250.0" promptText="Rename File" />
+											</children>
+										</HBox>
+										<Button fx:id="moveButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Move">
+											<HBox.margin>
+												<Insets />
+											</HBox.margin>
+										</Button>
+										<Button fx:id="skipButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Skip" />
+										<Button fx:id="undoButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Undo" />
+										<Button fx:id="endButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="End" />
+									</children>
+									<padding>
+										<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+									</padding>
+								</HBox>
+							</children>
+						</VBox>
+					</children>
+				</VBox>
+			</children>
+		</AnchorPane>
+	</children>
 </VBox>

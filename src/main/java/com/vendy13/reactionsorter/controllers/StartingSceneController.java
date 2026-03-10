@@ -1,7 +1,7 @@
 package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.caches.DirectoryCache;
-import com.vendy13.reactionsorter.utils.DirectoryFormatter;
+import com.vendy13.reactionsorter.utils.DirectoryUtils;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -24,6 +24,10 @@ public class StartingSceneController implements StageAwareController {
 	private TextField workingDirectory;
 	@FXML
 	private TextField targetDirectory;
+	@FXML
+	private Button workingChoose;
+	@FXML
+	private Button targetChoose;
 	@FXML
 	private Button beginButton;
 	@FXML
@@ -52,13 +56,36 @@ public class StartingSceneController implements StageAwareController {
 	public void init(String[] directoryPathsCache) {
 		this.directoryPathsCache = directoryPathsCache;
 		
-		beginButton.setOnAction(event -> begin());
-		preferencesMenu.setOnAction(event -> preferencesMenu());
-		
-		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
-		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
+		workingDirectory.setText(DirectoryUtils.shortenDirectory(directoryPathsCache[0]));
+		targetDirectory.setText(DirectoryUtils.shortenDirectory(directoryPathsCache[1]));
 		workingTooltip.setText(directoryPathsCache[0]);
 		targetTooltip.setText(directoryPathsCache[1]);
+		
+		preferencesMenu.setOnAction(event -> preferencesMenu());
+		beginButton.setOnAction(event -> begin());
+		
+		workingChoose.setOnAction(event -> this.directoryPathsCache[0] =
+				DirectoryUtils.chooseDirectories(false, false, workingDirectory, workingTooltip, stage));
+		targetChoose.setOnAction(event -> this.directoryPathsCache[1] =
+				DirectoryUtils.chooseDirectories(false, true, targetDirectory, targetTooltip, stage));
+	}
+	
+	private void preferencesMenu() {
+		try {
+			Stage prefsStage = new Stage();
+			prefsStage.setTitle("Preferences");
+			prefsStage.setResizable(false);
+			prefsStage.initModality(Modality.APPLICATION_MODAL);
+			prefsStage.initOwner(stage);
+			
+			PreferencesModalController controller = SceneLoader.loadScene("/fxml/PreferencesModal.fxml",
+					prefsStage, context);
+			controller.init();
+			
+			prefsStage.showAndWait();
+		} catch (IOException e) {
+			log.error("Error loading preferences scene: {}", e.getMessage());
+		}
 	}
 	
 	private void begin() {
@@ -72,23 +99,6 @@ public class StartingSceneController implements StageAwareController {
 			controller.init(directoryPathsCache);
 		} catch (IOException e) {
 			log.error("Error loading working scene: {}", e.getMessage());
-		}
-	}
-	
-	private void preferencesMenu() {
-		try {
-			Stage prefsStage = new Stage();
-			prefsStage.setTitle("Preferences");
-			prefsStage.setResizable(false);
-			prefsStage.initModality(Modality.APPLICATION_MODAL);
-			prefsStage.initOwner(stage);
-			
-			PreferencesModalController controller = SceneLoader.loadScene("/fxml/PreferencesModal.fxml", prefsStage, context);
-			controller.init();
-			
-			prefsStage.showAndWait();
-		} catch (IOException e) {
-			log.error("Error loading preferences scene: {}", e.getMessage());
 		}
 	}
 	

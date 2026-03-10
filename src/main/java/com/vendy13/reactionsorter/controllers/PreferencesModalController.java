@@ -1,16 +1,13 @@
 package com.vendy13.reactionsorter.controllers;
 
-import com.vendy13.reactionsorter.utils.DirectoryFormatter;
+import com.vendy13.reactionsorter.utils.DirectoryUtils;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
 
 @Component
 public class PreferencesModalController implements StageAwareController {
@@ -58,8 +55,8 @@ public class PreferencesModalController implements StageAwareController {
 		String defaultTargetDirectory = preferencesManager.getPreference("defaultTargetDirectory");
 		
 		// Load preferences into modal
-		defaultWorkingDisplay.setText(DirectoryFormatter.shortenDirectory(defaultWorkingDirectory));
-		defaultTargetDisplay.setText(DirectoryFormatter.shortenDirectory(defaultTargetDirectory));
+		defaultWorkingDisplay.setText(DirectoryUtils.shortenDirectory(defaultWorkingDirectory));
+		defaultTargetDisplay.setText(DirectoryUtils.shortenDirectory(defaultTargetDirectory));
 		defaultWorkingTooltip.setText(defaultWorkingDirectory);
 		defaultTargetTooltip.setText(defaultTargetDirectory);
 		confirmMove.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("confirmMove")));
@@ -68,27 +65,18 @@ public class PreferencesModalController implements StageAwareController {
 		defaultVolumeSlider.setValue(Double.parseDouble(preferencesManager.getPreference("defaultVolume")));
 		defaultVolume.setText(preferencesManager.getPreference("defaultVolume"));
 		
-		defaultWorkingChoose.setOnAction(event -> browseDirectories(false));
-		defaultTargetChoose.setOnAction(event -> browseDirectories(true));
 		saveButton.setOnAction(event -> save());
 		cancelButton.setOnAction(event -> stage.close());
 		
+		defaultWorkingChoose.setOnAction(event ->
+				DirectoryUtils.chooseDirectories(true, false, defaultWorkingDisplay,defaultWorkingTooltip,
+						stage));
+		defaultTargetChoose.setOnAction(event ->
+				DirectoryUtils.chooseDirectories(true, true, defaultTargetDisplay, defaultTargetTooltip,
+						stage));
+		
 		defaultVolumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
 				defaultVolume.setText(String.valueOf((int) defaultVolumeSlider.getValue())));
-	}
-	
-	// TODO make available for starting & working scenes(?)
-	private void browseDirectories(boolean isTarget) {
-		String directory = isTarget ? defaultTargetTooltip.getText() : defaultWorkingTooltip.getText();
-		DirectoryChooser dirChooser = new DirectoryChooser();
-		dirChooser.setInitialDirectory(new File(directory));
-		dirChooser.setTitle("Select Default " + (isTarget ? "Target" : "Working") + " Directory");
-		File selectedDir = dirChooser.showDialog(stage);
-		
-		if (selectedDir != null) directory = selectedDir.getAbsolutePath();
-		
-		(isTarget ? defaultTargetDisplay : defaultWorkingDisplay).setText(DirectoryFormatter.shortenDirectory(directory));
-		(isTarget ? defaultTargetTooltip : defaultWorkingTooltip).setText(directory);
 	}
 	
 	private void save() {

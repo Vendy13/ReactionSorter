@@ -32,11 +32,21 @@ public class ButtonService {
 	public void moveFile(String newFileName, String targetDirectory, ReactionObject workingFile) {
 		try {
 			String newFilePath = Path.of(targetDirectory, newFileName).toString(); // TODO check for illegal characters
+			/* FIXME Error moving file: The process cannot access the file because it is being used by another process
+			     Steps to reproduce:
+			     1. Start app & click Begin (initializes Working Scene)
+			     2. Click Move (file moves successfully)
+			     3. Click End (back to Starting Scene w/ new target directory)
+			     4. Choose a different target directory (in Starting Scene)
+			     5. Click Begin (back to Working Scene)
+			     6. Click Move (error moving file)
+			     Bonus: Click Undo and File is (sometimes) "successfully returned" (but likely just passes check of original file location)
+			 */
 			Files.move(Path.of(workingFile.filePath()), Path.of(newFilePath), StandardCopyOption.ATOMIC_MOVE);
 			
 			// Cache new file state for Undo
 			ReactionObject targetFile = workingFile.move(newFileName, newFilePath);
-			directoryCache.getDirectoryCache().replace(directoryCache.getCachedIndex(), targetFile);
+			directoryCache.getDirectoryCache().put(directoryCache.getCachedIndex(), targetFile);
 			
 			log.info("File successfully moved to: {}", newFilePath);
 		} catch (Exception e) {

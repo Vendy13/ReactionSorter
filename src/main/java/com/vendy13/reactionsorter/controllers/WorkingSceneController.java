@@ -4,7 +4,7 @@ import com.vendy13.reactionsorter.caches.DirectoryCache;
 import com.vendy13.reactionsorter.enums.FileType;
 import com.vendy13.reactionsorter.objects.ReactionObject;
 import com.vendy13.reactionsorter.services.ButtonService;
-import com.vendy13.reactionsorter.utils.DirectoryFormatter;
+import com.vendy13.reactionsorter.utils.DirectoryUtils;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Platform;
@@ -13,8 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -25,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
@@ -46,6 +43,10 @@ public class WorkingSceneController implements StageAwareController {
 	private TextField targetDirectory;
 	@FXML
 	private TextField fileRename;
+	//	@FXML
+//	private Button workingChoose;
+	@FXML
+	private Button targetChoose;
 	@FXML
 	private Button moveButton;
 	@FXML
@@ -97,22 +98,46 @@ public class WorkingSceneController implements StageAwareController {
 	public void init(String[] directoryPathsCache) {
 		this.directoryPathsCache = directoryPathsCache;
 		
-		moveButton.setOnAction(event -> move());
-		skipButton.setOnAction(event -> skip());
-		undoButton.setOnAction(event -> undo());
-		endButton.setOnAction(event -> end());
-		preferencesMenu.setOnAction(event -> preferencesMenu());
-		
-		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
-		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
-		workingTooltip.setText(directoryPathsCache[0]);
-		targetTooltip.setText(directoryPathsCache[1]);
-		
 		// Resizes image with window
 		// IDEA button to toggle original resolution (ScrollPane if exceeds StackPane size)
 		imageView.fitWidthProperty().bind(stackPane.widthProperty());
 		imageView.fitHeightProperty().bind(stackPane.heightProperty());
+		
+		workingDirectory.setText(DirectoryUtils.shortenDirectory(directoryPathsCache[0]));
+		targetDirectory.setText(DirectoryUtils.shortenDirectory(directoryPathsCache[1]));
+		workingTooltip.setText(directoryPathsCache[0]);
+		targetTooltip.setText(directoryPathsCache[1]);
+		
+		preferencesMenu.setOnAction(event -> preferencesMenu());
+		moveButton.setOnAction(event -> move());
+		skipButton.setOnAction(event -> skip());
+		undoButton.setOnAction(event -> undo());
+		endButton.setOnAction(event -> end());
+
+//		workingChoose.setOnAction(event -> this.directoryPathsCache[0] =
+//				DirectoryUtils.chooseDirectories(false, false, workingDirectory, workingTooltip, stage));
+		targetChoose.setOnAction(event -> this.directoryPathsCache[1] =
+				DirectoryUtils.chooseDirectories(false, true, targetDirectory, targetTooltip, stage));
+		
 		loadWorkingFile();
+	}
+	
+	private void preferencesMenu() {
+		try {
+			Stage prefsStage = new Stage();
+			prefsStage.setTitle("Preferences");
+			prefsStage.setResizable(false);
+			prefsStage.initModality(Modality.APPLICATION_MODAL);
+			prefsStage.initOwner(stage);
+			
+			PreferencesModalController controller = SceneLoader.loadScene("/fxml/PreferencesModal.fxml",
+					prefsStage, context);
+			controller.init();
+			
+			prefsStage.showAndWait();
+		} catch (IOException e) {
+			log.error("Error loading preferences scene: {}", e.getMessage());
+		}
 	}
 	
 	private void move() {
@@ -121,18 +146,21 @@ public class WorkingSceneController implements StageAwareController {
 				confirm(stage, "Move", "Move file?")) return;
 		
 		try {
-			buttonService.moveFile(fileRename.getText() + "." + workingFile.fileExtension(), directoryPathsCache[1], workingFile);
+			buttonService.moveFile(fileRename.getText() + "." + workingFile.fileExtension(),
+					directoryPathsCache[1], workingFile);
 			undoCache = workingFile;
 			
 			isMove = true;
 		} catch (Exception e) {
 			// If move fails, doesn't load next file
 			// TODO doesn't work, exception not passed from moveFile()?
+			log.error("Error error moving file: {}", e.getMessage());
 			return;
 		}
 		
 		buttonService.endCheck(directoryPathsCache, stage);
 		loadWorkingFile();
+		
 		undoFlag = false;
 	}
 	
@@ -165,23 +193,6 @@ public class WorkingSceneController implements StageAwareController {
 		buttonService.endCheck(directoryPathsCache, stage);
 	}
 	
-	private void preferencesMenu() {
-		try {
-			Stage prefsStage = new Stage();
-			prefsStage.setTitle("Preferences");
-			prefsStage.setResizable(false);
-			prefsStage.initModality(Modality.APPLICATION_MODAL);
-			prefsStage.initOwner(stage);
-			
-			PreferencesModalController controller = SceneLoader.loadScene("/fxml/PreferencesModal.fxml", prefsStage, context);
-			controller.init();
-			
-			prefsStage.showAndWait();
-		} catch (IOException e) {
-			log.error("Error loading preferences scene: {}", e.getMessage());
-		}
-	}
-	
 	// TODO VLCJ for unsupported codecs
 	/* TODO MediaView for videos :(
 	 * MEDIAVIEW WILL HAVE TO BE LOADED IN A DIFFERENT WAY
@@ -211,18 +222,18 @@ public class WorkingSceneController implements StageAwareController {
 			} catch (Exception e) {
 				log.error("Error loading image file: {}", e.getMessage());
 			}
-		} else if (workingFile.fileType() == FileType.VIDEO) {
-			try {
-				File mediaFile = new File(workingFile.filePath());
-				String mediaUri = mediaFile.toURI().toString();
-				Media media = new Media(mediaUri);
-				MediaPlayer mediaPlayer = new MediaPlayer(media);
-				
-				mediaView.setMediaPlayer(mediaPlayer);
-//				mediaPlayer.play();
-			} catch (Exception e) {
-				log.error("Error loading video file: {}", e.getMessage());
-			}
+//		} else if (workingFile.fileType() == FileType.VIDEO) {
+//			try {
+//				File mediaFile = new File(workingFile.filePath());
+//				String mediaUri = mediaFile.toURI().toString();
+//				Media media = new Media(mediaUri);
+//				MediaPlayer mediaPlayer = new MediaPlayer(media);
+//
+//				mediaView.setMediaPlayer(mediaPlayer);
+////				mediaPlayer.play();
+//			} catch (Exception e) {
+//				log.error("Error loading video file: {}", e.getMessage());
+//			}
 		} else {
 			Image defaultIcon = new Image("images/default_file.png");
 			imageView.setImage(defaultIcon);
