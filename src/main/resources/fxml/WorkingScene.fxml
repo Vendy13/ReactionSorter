@@ -101,13 +101,16 @@
                         </ButtonBar>
                      </children>
                   </HBox>
-                  <StackPane>
+                  <StackPane fx:id="stackPane" minHeight="0.0" minWidth="0.0" prefHeight="500.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <MediaView fx:id="mediaView" fitHeight="449.0" fitWidth="800.0" />
-                        <ImageView fx:id="imageView" fitHeight="449.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true" />
+                        <MediaView fx:id="mediaView" />
+                        <ImageView fx:id="imageView" preserveRatio="true" />
                      </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
                   </StackPane>
-                  <VBox>
+                  <VBox prefHeight="81.0" prefWidth="800.0">
                      <children>
                         <HBox alignment="CENTER" prefHeight="70.0" prefWidth="800.0" spacing="50.0">
                            <children>

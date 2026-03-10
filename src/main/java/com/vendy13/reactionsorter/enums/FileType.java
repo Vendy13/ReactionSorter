@@ -27,8 +27,7 @@ public enum FileType {
 	VIDEO {
 		@Override
 		public String getDimensions(File file) {
-//			return new VideoUtils.getVideoDimensions(file);
-			return "Video Dims";
+			return "Video Dims"; // TODO get video dimensions
 		}
 	},
 	OTHER {
@@ -63,7 +62,7 @@ public enum FileType {
 	public static Dimension getImageDimension(File imgFile) throws IOException {
 		String extension = FilenameUtils.getExtension(imgFile.getAbsolutePath());
 		Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(extension);
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			ImageReader reader = iter.next();
 			try {
 				ImageInputStream stream = new FileImageInputStream(imgFile);

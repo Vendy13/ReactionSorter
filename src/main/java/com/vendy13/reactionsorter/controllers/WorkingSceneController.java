@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -60,6 +61,8 @@ public class WorkingSceneController implements StageAwareController {
 	private ImageView imageView;
 	@FXML
 	private MediaView mediaView;
+	@FXML
+	private StackPane stackPane;
 	
 	private static final Logger log = LoggerFactory.getLogger(WorkingSceneController.class);
 	
@@ -68,6 +71,7 @@ public class WorkingSceneController implements StageAwareController {
 	private final ButtonService buttonService;
 	
 	// TODO Preferences Config
+	// TODO Zoom image on scroll
 	
 	// Cannot undo on first file
 	private boolean undoFlag = true;
@@ -101,6 +105,11 @@ public class WorkingSceneController implements StageAwareController {
 		targetDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[1]));
 		workingTooltip.setText(directoryPathsCache[0]);
 		targetTooltip.setText(directoryPathsCache[1]);
+		
+		// Resizes image with window
+		// IDEA button to toggle original resolution (ScrollPane if exceeds StackPane size)
+		imageView.fitWidthProperty().bind(stackPane.widthProperty());
+		imageView.fitHeightProperty().bind(stackPane.heightProperty());
 		loadWorkingFile();
 	}
 	

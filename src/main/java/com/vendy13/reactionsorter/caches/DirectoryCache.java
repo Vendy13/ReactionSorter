@@ -29,7 +29,7 @@ public class DirectoryCache {
 			String filePath = file.getAbsolutePath();
 			String fileExtension = FilenameUtils.getExtension(fullName);
 			FileType fileType = FileType.resolve(fileExtension);
-			String fileDimensions = fileType.getDimensions(file); // TODO Placeholder for dimensions, needs implementation
+			String fileDimensions = fileType.getDimensions(file);
 			String fileSize = FileUtils.byteCountToDisplaySize(file.length());
 			
 			ReactionObject reactionObject = new ReactionObject(fileName, filePath, fileExtension, fileType, fileDimensions, fileSize);
