@@ -6,6 +6,7 @@ import com.vendy13.reactionsorter.objects.ReactionObject;
 import com.vendy13.reactionsorter.services.ButtonService;
 import com.vendy13.reactionsorter.utils.DirectoryFormatter;
 import com.vendy13.reactionsorter.utils.PreferencesManager;
+import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,14 +17,17 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Optional;
 
 @Component
@@ -57,6 +61,8 @@ public class WorkingSceneController implements StageAwareController {
 	@FXML
 	private Tooltip targetTooltip;
 	@FXML
+	private MenuItem preferencesMenu;
+	@FXML
 	private ImageView imageView;
 	@FXML
 	private MediaView mediaView;
@@ -65,12 +71,10 @@ public class WorkingSceneController implements StageAwareController {
 	
 	private static final Logger log = LoggerFactory.getLogger(WorkingSceneController.class);
 	
+	private final ApplicationContext context;
 	private final DirectoryCache directoryCache;
 	private final PreferencesManager preferencesManager;
 	private final ButtonService buttonService;
-	
-	// TODO Preferences Config
-	// TODO Zoom image on scroll
 	
 	// Cannot undo on first file
 	private boolean undoFlag = true;
@@ -81,7 +85,8 @@ public class WorkingSceneController implements StageAwareController {
 	private Stage stage;
 	
 	@Autowired
-	public WorkingSceneController(DirectoryCache directoryCache, PreferencesManager preferencesManager, ButtonService buttonService) {
+	public WorkingSceneController(ApplicationContext context, DirectoryCache directoryCache, PreferencesManager preferencesManager, ButtonService buttonService) {
+		this.context = context;
 		this.directoryCache = directoryCache;
 		this.preferencesManager = preferencesManager;
 		this.buttonService = buttonService;
@@ -98,6 +103,7 @@ public class WorkingSceneController implements StageAwareController {
 		skipButton.setOnAction(event -> skip());
 		undoButton.setOnAction(event -> undo());
 		endButton.setOnAction(event -> end());
+		preferencesMenu.setOnAction(event -> preferencesMenu());
 		
 		directoryCount.setText(String.valueOf(directoryCache.getDirectoryCache().size()));
 		workingDirectory.setText(DirectoryFormatter.shortenDirectory(directoryPathsCache[0]));
@@ -160,6 +166,23 @@ public class WorkingSceneController implements StageAwareController {
 		
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
 		buttonService.endCheck(directoryPathsCache, stage);
+	}
+	
+	private void preferencesMenu() {
+		try {
+			Stage prefsStage = new Stage();
+			prefsStage.setTitle("Preferences");
+			prefsStage.setResizable(false);
+			prefsStage.initModality(Modality.APPLICATION_MODAL);
+			prefsStage.initOwner(stage);
+			
+			PreferencesModalController controller = SceneLoader.loadScene("/fxml/PreferencesModal.fxml", prefsStage, context);
+			controller.init();
+			
+			prefsStage.showAndWait();
+		} catch (IOException e) {
+			log.error("Error loading preferences scene: {}", e.getMessage());
+		}
 	}
 	
 	// TODO VLCJ for unsupported codecs
