@@ -13,7 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -22,6 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,8 +66,6 @@ public class WorkingSceneController implements StageAwareController {
 	@FXML
 	private ImageView imageView;
 	@FXML
-	private MediaView mediaView;
-	@FXML
 	private StackPane stackPane;
 	
 	private static final Logger log = LoggerFactory.getLogger(WorkingSceneController.class);
@@ -72,6 +74,8 @@ public class WorkingSceneController implements StageAwareController {
 	private final DirectoryCache directoryCache;
 	private final PreferencesManager preferencesManager;
 	private final ButtonService buttonService;
+	private final MediaPlayerFactory mediaPlayerFactory;
+	private final EmbeddedMediaPlayer embeddedMediaPlayer;
 	
 	// Cannot undo on first file
 	private boolean undoFlag = true;
@@ -87,6 +91,22 @@ public class WorkingSceneController implements StageAwareController {
 		this.directoryCache = directoryCache;
 		this.preferencesManager = preferencesManager;
 		this.buttonService = buttonService;
+		
+		this.mediaPlayerFactory = new MediaPlayerFactory();
+		this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
+		this.embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+			@Override
+			public void playing(MediaPlayer mediaPlayer) {}
+			
+			@Override
+			public void paused(MediaPlayer mediaPlayer) {}
+			
+			@Override
+			public void stopped(MediaPlayer mediaPlayer) {}
+			
+			@Override
+			public void timeChanged(MediaPlayer mediaPlayer, long newTime) {}
+		});
 	}
 	
 	// IDEA create object to hold all UI elements and pass to services?
@@ -95,6 +115,8 @@ public class WorkingSceneController implements StageAwareController {
 	@FXML
 	public void init(String[] directoryPathsCache) {
 		this.directoryPathsCache = directoryPathsCache;
+		
+		embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(this.imageView));
 		
 		// Resizes image with window
 		// IDEA button to toggle original resolution (ScrollPane if exceeds StackPane size)
@@ -185,28 +207,18 @@ public class WorkingSceneController implements StageAwareController {
 		// Ends if YES is selected, continues if NO is selected
 		if (confirm(stage, "End", "End sorting?")) return;
 		
+		// Closes down vlcj components
+		embeddedMediaPlayer.controls().stop();
+		embeddedMediaPlayer.release();
+		mediaPlayerFactory.release();
+		
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
 		buttonService.endCheck(directoryPathsCache, stage);
 	}
 	
-	// TODO VLCJ for unsupported codecs
-	/* TODO MediaView for videos :(
-	 * MEDIAVIEW WILL HAVE TO BE LOADED IN A DIFFERENT WAY
-	 * Current option outlined below:
-	 * mediaPlayer.stop()
-	 * mediaPlayer.dispose()
-	 * Media is media file/stream
-	 * MediaPlayer is the actual player that maintains the file in use
-	 * MediaView is just the visual display component for the UI
-	 *
-	 * Alternate option using temp files, maybe be sluggish:
-	 * Create temp directory within same place as local preferences file
-	 * Copy video file to temp directory
-	 * Load MediaView with file from temp directory
-	 * Real file can be moved and renamed without being locked
-	 * Delete temp file when move is complete
-	 */
 	private void loadWorkingFile() {
+		embeddedMediaPlayer.controls().stop();
+		
 		int cachedIndex = directoryCache.getCachedIndex();
 		workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
 		
@@ -218,18 +230,12 @@ public class WorkingSceneController implements StageAwareController {
 			} catch (Exception e) {
 				log.error("Error loading image file: {}", e.getMessage());
 			}
-//		} else if (workingFile.fileType() == FileType.VIDEO) {
-//			try {
-//				File mediaFile = new File(workingFile.filePath());
-//				String mediaUri = mediaFile.toURI().toString();
-//				Media media = new Media(mediaUri);
-//				MediaPlayer mediaPlayer = new MediaPlayer(media);
-//
-//				mediaView.setMediaPlayer(mediaPlayer);
-////				mediaPlayer.play();
-//			} catch (Exception e) {
-//				log.error("Error loading video file: {}", e.getMessage());
-//			}
+		} else if (workingFile.fileType() == FileType.VIDEO) {
+			try {
+				embeddedMediaPlayer.media().play(workingFile.filePath());
+			} catch (Exception e) {
+				log.error("Error loading video file: {}", e.getMessage());
+			}
 		} else {
 			Image defaultIcon = new Image("images/default_file.png");
 			imageView.setImage(defaultIcon);

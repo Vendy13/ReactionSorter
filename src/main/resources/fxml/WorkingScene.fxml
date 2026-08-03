@@ -44,7 +44,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Text?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vendy13.reactionsorter.controllers.WorkingSceneController">
@@ -97,7 +96,6 @@
 						</HBox>
 						<StackPane fx:id="stackPane" minHeight="0.0" minWidth="0.0" prefHeight="500.0" VBox.vgrow="ALWAYS">
 							<children>
-								<MediaView fx:id="mediaView" />
 								<ImageView fx:id="imageView" preserveRatio="true" />
 							</children>
 							<VBox.margin>

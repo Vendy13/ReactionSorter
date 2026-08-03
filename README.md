@@ -1,7 +1,8 @@
 # Reaction Sorter
 A simple Spring Boot & JavaFX application for (hopefully) quicker sorting of reaction images and videos.
 
-Download latest version: [Download Link Goes Here](#)
+Download latest version: [Download Link Goes Here](#)\
+Requires VLC 3.0.0 minimum (3.0.21 used for testing)
 
 ## Features
 ### Display
