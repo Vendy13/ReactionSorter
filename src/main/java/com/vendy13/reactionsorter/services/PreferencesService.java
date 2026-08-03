@@ -1,10 +1,10 @@
-package com.vendy13.reactionsorter.utils;
+package com.vendy13.reactionsorter.services;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-@Component
-public class PreferencesManager {
-	private static final Logger log = LoggerFactory.getLogger(PreferencesManager.class);
+@Service
+public class PreferencesService {
+	private static final Logger log = LoggerFactory.getLogger(PreferencesService.class);
 	private static final String OS = System.getProperty("os.name");
 	private static final String APP_DATA = System.getenv("LOCALAPPDATA");
 	private static final String USER_HOME = System.getProperty("user.home");
@@ -70,6 +70,7 @@ public class PreferencesManager {
 				try {
 					InputStream prefs = Files.newInputStream(prefPath);
 					preferences.load(prefs);
+					prefs.close();
 					log.info("Preferences successfully loaded");
 				} catch (Exception e) {
 					log.error("Error reading preferences file: {}", e.getMessage());
@@ -77,6 +78,7 @@ public class PreferencesManager {
 			} else {
 				try {
 					preferences.load(defaultPrefs);
+					defaultPrefs.close();
 					log.info("Default preferences loaded");
 				} catch (Exception e) {
 					log.error("Error loading default preferences: {}", e.getMessage());
@@ -91,6 +93,8 @@ public class PreferencesManager {
 		try {
 			OutputStream out = Files.newOutputStream(prefPath);
 			preferences.store(out, "ReactionSorter Preferences");
+			out.close();
+			log.info("Preferences successfully saved");
 		} catch (IOException e) {
 			log.error("Error saving preferences: {}", e.getMessage());
 		}
@@ -102,5 +106,9 @@ public class PreferencesManager {
 	
 	public void setPreference(String key, String value) {
 		preferences.setProperty(key, value);
+	}
+	
+	public String getPrefPath() {
+		return prefPath.toString();
 	}
 }

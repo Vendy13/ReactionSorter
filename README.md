@@ -13,7 +13,7 @@ Requires VLC 3.0.0 minimum (3.0.21 used for testing)
 - Videos
   - MP4, WEBM
   - Seekbar with time elapsed/remaining
-  - Configurable autoplay and volume
+  - Configurable autoplay, loop, and volume
 - File details
   - Name, Type/Extension, Dimensions, Size
 

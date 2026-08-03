@@ -2,7 +2,6 @@ package com.vendy13.reactionsorter.services;
 
 import com.vendy13.reactionsorter.controllers.StartingSceneController;
 import com.vendy13.reactionsorter.utils.FxSpringContextBridge;
-import com.vendy13.reactionsorter.utils.PreferencesManager;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Application;
 import javafx.scene.image.Image;
@@ -17,15 +16,15 @@ public class FXApplicationService extends Application {
 	private static final Logger log = LoggerFactory.getLogger(FXApplicationService.class);
 	
 	private ApplicationContext context;
-	private PreferencesManager preferencesManager;
+	private PreferencesService preferencesService;
 	
 	@Override
 	public void init() {
 		// Use injected context
 		context = FxSpringContextBridge.getContext();
 		
-		// Fetch Spring-managed PreferencesManager bean
-		preferencesManager = context.getBean(PreferencesManager.class);
+		// Fetch Spring-managed PreferencesService bean
+		preferencesService = context.getBean(PreferencesService.class);
 		// IDEA WorkingCache here with included directories; initialize them just after
 	}
 	
@@ -39,8 +38,8 @@ public class FXApplicationService extends Application {
 			StartingSceneController controller = SceneLoader.loadScene("/fxml/StartingScene.fxml", stage, context);
 			
 			// Loads the default directories from preferences
-			String[] directoryPathsCache = {preferencesManager.getPreference("defaultWorkingDirectory"),
-					preferencesManager.getPreference("defaultTargetDirectory")};
+			String[] directoryPathsCache = {preferencesService.getPreference("defaultWorkingDirectory"),
+					preferencesService.getPreference("defaultTargetDirectory")};
 			controller.init(directoryPathsCache);
 		} catch (IOException e) {
 			log.error("Error initializing starting scene: {}", e.getMessage());

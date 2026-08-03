@@ -5,7 +5,7 @@ import com.vendy13.reactionsorter.enums.FileType;
 import com.vendy13.reactionsorter.objects.ReactionObject;
 import com.vendy13.reactionsorter.services.ButtonService;
 import com.vendy13.reactionsorter.utils.DirectoryUtils;
-import com.vendy13.reactionsorter.utils.PreferencesManager;
+import com.vendy13.reactionsorter.services.PreferencesService;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -72,7 +72,7 @@ public class WorkingSceneController implements StageAwareController {
 	
 	private final ApplicationContext context;
 	private final DirectoryCache directoryCache;
-	private final PreferencesManager preferencesManager;
+	private final PreferencesService preferencesService;
 	private final ButtonService buttonService;
 	private final MediaPlayerFactory mediaPlayerFactory;
 	private final EmbeddedMediaPlayer embeddedMediaPlayer;
@@ -86,10 +86,10 @@ public class WorkingSceneController implements StageAwareController {
 	private Stage stage;
 	
 	@Autowired
-	public WorkingSceneController(ApplicationContext context, DirectoryCache directoryCache, PreferencesManager preferencesManager, ButtonService buttonService) {
+	public WorkingSceneController(ApplicationContext context, DirectoryCache directoryCache, PreferencesService preferencesService, ButtonService buttonService) {
 		this.context = context;
 		this.directoryCache = directoryCache;
-		this.preferencesManager = preferencesManager;
+		this.preferencesService = preferencesService;
 		this.buttonService = buttonService;
 		
 		this.mediaPlayerFactory = new MediaPlayerFactory();
@@ -109,17 +109,16 @@ public class WorkingSceneController implements StageAwareController {
 		});
 	}
 	
-	// IDEA create object to hold all UI elements and pass to services?
-	
 	// Loads first file
 	@FXML
 	public void init(String[] directoryPathsCache) {
 		this.directoryPathsCache = directoryPathsCache;
 		
 		embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(this.imageView));
+		embeddedMediaPlayer.controls().setRepeat(Boolean.parseBoolean(preferencesService.getPreference("loop")));
 		
-		// Resizes image with window
 		// IDEA button to toggle original resolution (ScrollPane if exceeds StackPane size)
+		// Resizes image with window
 		imageView.fitWidthProperty().bind(stackPane.widthProperty());
 		imageView.fitHeightProperty().bind(stackPane.heightProperty());
 		
@@ -140,6 +139,7 @@ public class WorkingSceneController implements StageAwareController {
 		loadWorkingFile();
 	}
 	
+	// FIXME Refresh prefs cache on save
 	private void preferencesMenu() {
 		try {
 			Stage prefsStage = new Stage();
@@ -160,7 +160,7 @@ public class WorkingSceneController implements StageAwareController {
 	
 	private void move() {
 		// Only stops move if confirmMove is enabled and user selects NO
-		if (Boolean.parseBoolean(preferencesManager.getPreference("confirmMove")) &&
+		if (Boolean.parseBoolean(preferencesService.getPreference("confirmMove")) &&
 				confirm(stage, "Move", "Move file?")) return;
 		
 		try {
@@ -176,6 +176,7 @@ public class WorkingSceneController implements StageAwareController {
 			return;
 		}
 		
+		stopVideo();
 		buttonService.endCheck(directoryPathsCache, stage);
 		loadWorkingFile();
 		
@@ -185,6 +186,7 @@ public class WorkingSceneController implements StageAwareController {
 	private void skip() {
 		isMove = false;
 		
+		stopVideo();
 		buttonService.endCheck(directoryPathsCache, stage);
 		loadWorkingFile();
 		
@@ -195,6 +197,7 @@ public class WorkingSceneController implements StageAwareController {
 		// Prevents multiple undos
 		if (undoFlag) return;
 		
+		stopVideo();
 		// IDEA confirm undo?
 		directoryCache.previousCachedIndex();
 		buttonService.undoMove(isMove, undoCache);
@@ -207,18 +210,12 @@ public class WorkingSceneController implements StageAwareController {
 		// Ends if YES is selected, continues if NO is selected
 		if (confirm(stage, "End", "End sorting?")) return;
 		
-		// Closes down vlcj components
-		embeddedMediaPlayer.controls().stop();
-		embeddedMediaPlayer.release();
-		mediaPlayerFactory.release();
-		
+		stopVideo();
 		directoryCache.setCachedIndex(directoryCache.getDirectoryCache().size() - 1);
 		buttonService.endCheck(directoryPathsCache, stage);
 	}
 	
 	private void loadWorkingFile() {
-		embeddedMediaPlayer.controls().stop();
-		
 		int cachedIndex = directoryCache.getCachedIndex();
 		workingFile = directoryCache.getDirectoryCache().get(cachedIndex);
 		
@@ -232,6 +229,8 @@ public class WorkingSceneController implements StageAwareController {
 			}
 		} else if (workingFile.fileType() == FileType.VIDEO) {
 			try {
+				embeddedMediaPlayer.audio().setVolume(Integer.parseInt(preferencesService.getPreference("defaultVolume")));
+				log.info("Volume is currently {}", embeddedMediaPlayer.audio().volume());
 				embeddedMediaPlayer.media().play(workingFile.filePath());
 			} catch (Exception e) {
 				log.error("Error loading video file: {}", e.getMessage());
@@ -272,6 +271,13 @@ public class WorkingSceneController implements StageAwareController {
 		
 		// NO to prevent inversion of return value
 		return result.isPresent() && result.get() == ButtonType.NO;
+	}
+	
+	// Stops working video/audio on action
+	private void stopVideo() {
+		if (workingFile.fileType() == FileType.VIDEO) {
+			embeddedMediaPlayer.controls().stop();
+		}
 	}
 	
 	@Override

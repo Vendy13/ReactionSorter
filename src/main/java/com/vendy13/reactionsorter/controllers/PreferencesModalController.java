@@ -1,11 +1,13 @@
 package com.vendy13.reactionsorter.controllers;
 
 import com.vendy13.reactionsorter.utils.DirectoryUtils;
-import com.vendy13.reactionsorter.utils.PreferencesManager;
+import com.vendy13.reactionsorter.services.PreferencesService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,8 @@ public class PreferencesModalController implements StageAwareController {
 	@FXML
 	private CheckBox autoplay;
 	@FXML
+	private CheckBox loop;
+	@FXML
 	private CheckBox persistentVolume;
 	@FXML
 	private Slider defaultVolumeSlider;
@@ -38,32 +42,35 @@ public class PreferencesModalController implements StageAwareController {
 	@FXML
 	private Tooltip defaultTargetTooltip;
 	
-	private final PreferencesManager preferencesManager;
+	private static final Logger log = LoggerFactory.getLogger(PreferencesModalController.class);
+	
+	private final PreferencesService preferencesService;
 	
 	private Stage stage;
 	
 	@Autowired
-	public PreferencesModalController(PreferencesManager preferencesManager) {
-		this.preferencesManager = preferencesManager;
+	public PreferencesModalController(PreferencesService preferencesService) {
+		this.preferencesService = preferencesService;
 	}
 	
 	@FXML
 	public void init() {
 		stage = (Stage) saveButton.getScene().getWindow();
 		
-		String defaultWorkingDirectory = preferencesManager.getPreference("defaultWorkingDirectory");
-		String defaultTargetDirectory = preferencesManager.getPreference("defaultTargetDirectory");
+		String defaultWorkingDirectory = preferencesService.getPreference("defaultWorkingDirectory");
+		String defaultTargetDirectory = preferencesService.getPreference("defaultTargetDirectory");
 		
 		// Load preferences into modal
 		defaultWorkingDisplay.setText(DirectoryUtils.shortenDirectory(defaultWorkingDirectory));
 		defaultTargetDisplay.setText(DirectoryUtils.shortenDirectory(defaultTargetDirectory));
 		defaultWorkingTooltip.setText(defaultWorkingDirectory);
 		defaultTargetTooltip.setText(defaultTargetDirectory);
-		confirmMove.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("confirmMove")));
-		autoplay.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("autoplay")));
-		persistentVolume.setSelected(Boolean.parseBoolean(preferencesManager.getPreference("persistentVolume")));
-		defaultVolumeSlider.setValue(Double.parseDouble(preferencesManager.getPreference("defaultVolume")));
-		defaultVolume.setText(preferencesManager.getPreference("defaultVolume"));
+		confirmMove.setSelected(Boolean.parseBoolean(preferencesService.getPreference("confirmMove")));
+		autoplay.setSelected(Boolean.parseBoolean(preferencesService.getPreference("autoplay")));
+		loop.setSelected(Boolean.parseBoolean(preferencesService.getPreference("loop")));
+		persistentVolume.setSelected(Boolean.parseBoolean(preferencesService.getPreference("persistentVolume")));
+		defaultVolumeSlider.setValue(Double.parseDouble(preferencesService.getPreference("defaultVolume")));
+		defaultVolume.setText(preferencesService.getPreference("defaultVolume"));
 		
 		saveButton.setOnAction(event -> save());
 		cancelButton.setOnAction(event -> stage.close());
@@ -80,13 +87,20 @@ public class PreferencesModalController implements StageAwareController {
 	}
 	
 	private void save() {
-		preferencesManager.setPreference("defaultWorkingDirectory", defaultWorkingTooltip.getText());
-		preferencesManager.setPreference("defaultTargetDirectory", defaultTargetTooltip.getText());
-		preferencesManager.setPreference("confirmMove", String.valueOf(confirmMove.isSelected()));
-		preferencesManager.setPreference("autoplay", String.valueOf(autoplay.isSelected()));
-		preferencesManager.setPreference("persistentVolume", String.valueOf(persistentVolume.isSelected()));
-		preferencesManager.setPreference("defaultVolume", String.valueOf((int) defaultVolumeSlider.getValue()));
-		preferencesManager.savePreferences();
+		try {
+			preferencesService.setPreference("defaultWorkingDirectory", defaultWorkingTooltip.getText());
+			preferencesService.setPreference("defaultTargetDirectory", defaultTargetTooltip.getText());
+			preferencesService.setPreference("confirmMove", String.valueOf(confirmMove.isSelected()));
+			preferencesService.setPreference("autoplay", String.valueOf(autoplay.isSelected()));
+			preferencesService.setPreference("loop", String.valueOf(loop.isSelected()));
+			preferencesService.setPreference("persistentVolume", String.valueOf(persistentVolume.isSelected()));
+			preferencesService.setPreference("defaultVolume", String.valueOf((int) defaultVolumeSlider.getValue()));
+			preferencesService.savePreferences();
+			
+			log.info("Preferences successfully saved to: {}", preferencesService.getPrefPath());
+		} catch (Exception e) {
+			log.error("Error saving preferences: {}", e.getMessage());
+		}
 		
 		stage.close();
 	}
