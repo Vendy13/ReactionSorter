@@ -1,6 +1,10 @@
 package com.vendy13.reactionsorter.enums;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.media.*;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -11,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public enum FileType {
 	IMAGE {
@@ -18,16 +23,44 @@ public enum FileType {
 		public String getDimensions(File file) {
 			try {
 				Dimension dims = getImageDimension(file);
-				return dims.width + " x " + dims.height;
+				return dims.height + " x " + dims.width;
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				log.error("Error getting image dimensions: {}", e.getMessage());
+				return "Image Dims";
 			}
 		}
 	},
 	VIDEO {
 		@Override
 		public String getDimensions(File file) {
-			return "Video Dims"; // TODO get video dimensions
+			// Waits for each video to fully parse in order to grab dims
+			CountDownLatch latch = new CountDownLatch(1);
+			Media media = mediaPlayerFactory.media().newMedia(file.getAbsolutePath());
+			media.events().addMediaEventListener(new MediaEventAdapter() {
+				@Override
+				public void mediaParsedChanged(Media media, MediaParsedStatus status) {
+					if (status == MediaParsedStatus.DONE) {
+						latch.countDown();
+					};
+				}
+			});
+			
+			try {
+				if (media.parsing().parse()) {
+					latch.await();
+					for (TrackInfo track : media.info().tracks()) {
+						if (track instanceof VideoTrackInfo) {
+							return ((VideoTrackInfo) track).height() + " x " + ((VideoTrackInfo) track).width();
+						}
+					}
+				}
+				return "Video Dims";
+			} catch (Exception e) {
+				log.error("Error getting video dimensions: {}", e.getMessage());
+				return "Error Dims";
+			} finally {
+				media.release();
+			}
 		}
 	},
 	OTHER {
@@ -37,8 +70,8 @@ public enum FileType {
 		}
 	};
 	
-	public abstract String getDimensions(File file);
-	
+	private static final Logger log = LoggerFactory.getLogger(FileType.class);
+	private static final MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory();
 	private static final Map<String, FileType> EXT_TYPE_MAP = Map.ofEntries(
 			Map.entry("BMP", IMAGE),
 			Map.entry("JPG", IMAGE),
@@ -48,6 +81,8 @@ public enum FileType {
 			Map.entry("MP4", VIDEO),
 			Map.entry("WEBM", VIDEO)
 	);
+	
+	public abstract String getDimensions(File file);
 	
 	public static FileType resolve(String extension) {
 		return EXT_TYPE_MAP.getOrDefault(extension.toUpperCase(), OTHER);

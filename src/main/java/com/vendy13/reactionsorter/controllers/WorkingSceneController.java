@@ -4,8 +4,8 @@ import com.vendy13.reactionsorter.caches.DirectoryCache;
 import com.vendy13.reactionsorter.enums.FileType;
 import com.vendy13.reactionsorter.objects.ReactionObject;
 import com.vendy13.reactionsorter.services.ButtonService;
-import com.vendy13.reactionsorter.utils.DirectoryUtils;
 import com.vendy13.reactionsorter.services.PreferencesService;
+import com.vendy13.reactionsorter.utils.DirectoryUtils;
 import com.vendy13.reactionsorter.utils.SceneLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -41,6 +41,8 @@ public class WorkingSceneController implements StageAwareController {
 	private Text fileType;
 	@FXML
 	private Text fileIndex;
+	@FXML
+	private Text parsingMessage;
 	@FXML
 	private TextField workingDirectory;
 	@FXML
@@ -114,6 +116,10 @@ public class WorkingSceneController implements StageAwareController {
 	public void init(String[] directoryPathsCache) {
 		this.directoryPathsCache = directoryPathsCache;
 		
+		parsingMessage.setVisible(false);
+		
+		// TODO Playback Controls (with time)
+		// TODO Volume Controls
 		embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(this.imageView));
 		embeddedMediaPlayer.controls().setRepeat(Boolean.parseBoolean(preferencesService.getPreference("loop")));
 		
@@ -171,7 +177,7 @@ public class WorkingSceneController implements StageAwareController {
 			isMove = true;
 		} catch (Exception e) {
 			// If move fails, doesn't load next file
-			// TODO doesn't work, exception not passed from moveFile()?
+			// BUG doesn't work, exception not passed from moveFile()?
 			log.error("Error error moving file: {}", e.getMessage());
 			return;
 		}
@@ -229,6 +235,7 @@ public class WorkingSceneController implements StageAwareController {
 			}
 		} else if (workingFile.fileType() == FileType.VIDEO) {
 			try {
+				// BUG AV1 spits out lots of errors, fix requires bigger reworks but displays fine
 				embeddedMediaPlayer.audio().setVolume(Integer.parseInt(preferencesService.getPreference("defaultVolume")));
 				log.info("Volume is currently {}", embeddedMediaPlayer.audio().volume());
 				embeddedMediaPlayer.media().play(workingFile.filePath());
