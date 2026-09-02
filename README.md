@@ -39,3 +39,7 @@ Requires VLC 3.0.0 minimum (3.0.21 used for testing)
   - Autoplay (toggle)
   - Persistent Volume (toggle)
   - Default Volume (slider)
+
+
+### Known Issues
+Please see [Here](#docs/KNOWNISSUES.md) for a list of currently known issues.
