@@ -42,4 +42,4 @@ Requires VLC 3.0.0 minimum (3.0.21 used for testing)
 
 
 ### Known Issues
-Please see [Here](#docs/KNOWNISSUES.md) for a list of currently known issues.
+Please see [here](docs/KNOWNISSUES.md) for a list of currently known issues.
