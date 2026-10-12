@@ -23,6 +23,7 @@ public class FXApplicationService extends Application {
 		// Use injected context
 		context = FxSpringContextBridge.getContext();
 		
+		// FIXME double check this is used correctly
 		// Fetch Spring-managed PreferencesService bean
 		preferencesService = context.getBean(PreferencesService.class);
 		// IDEA WorkingCache here with included directories; initialize them just after

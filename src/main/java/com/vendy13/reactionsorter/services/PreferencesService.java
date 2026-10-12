@@ -27,66 +27,9 @@ public class PreferencesService {
 	private Path prefPath;
 	
 	@PostConstruct
-	public void init() {
-		setOS();
-		createLocalPreferences();
+	private void init() {
+		setOSPath();
 		loadPreferences();
-	}
-	
-	public void setOS() {
-		if (Strings.CI.contains(OS, "win")) {
-			prefPath = Paths.get(APP_DATA, "ReactionSorter", "preferences.properties");
-		} else if (Strings.CI.contains(OS,"mac")) {
-			prefPath = Paths.get(USER_HOME, "Library", "Application Support", "ReactionSorter", "preferences.properties");
-		} else if (Strings.CI.contains(OS, "nix") || Strings.CI.contains(OS, "nux")) {
-			prefPath = Paths.get(USER_HOME, ".config", "ReactionSorter", "preferences.properties");
-		} else {
-			throw new UnsupportedOperationException("Unsupported OS: " + OS);
-		}
-		
-		log.info("OS detected: {}", OS);
-	}
-	
-	public void createLocalPreferences() {
-		try {
-			if (!Files.isDirectory(prefPath.getParent())) {
-				Files.createDirectories(prefPath.getParent());
-				log.info("ReactionSorter directory created at: {}", prefPath.getParent());
-			}
-			if (!Files.exists(prefPath) && defaultPrefs != null) {
-				Files.copy(defaultPrefs, prefPath);
-				log.info("Preferences file created at: {}", prefPath);
-			}
-		} catch (Exception e) {
-			log.error("Error creating local preferences file: {}", e.getMessage());
-		}
-		
-		log.info("Preferences file located at: {}", prefPath);
-	}
-	
-	private void loadPreferences() {
-		try {
-			if (Files.exists(prefPath)) {
-				try {
-					InputStream prefs = Files.newInputStream(prefPath);
-					preferences.load(prefs);
-					prefs.close();
-					log.info("Preferences successfully loaded");
-				} catch (Exception e) {
-					log.error("Error reading preferences file: {}", e.getMessage());
-				}
-			} else {
-				try {
-					preferences.load(defaultPrefs);
-					defaultPrefs.close();
-					log.info("Default preferences loaded");
-				} catch (Exception e) {
-					log.error("Error loading default preferences: {}", e.getMessage());
-				}
-			}
-		} catch (Exception e) {
-			log.error("Failed to load preferences: {}", e.getMessage());
-		}
 	}
 	
 	public void savePreferences() {
@@ -110,5 +53,67 @@ public class PreferencesService {
 	
 	public String getPrefPath() {
 		return prefPath.toString();
+	}
+	
+	private void setOSPath() {
+		if (Strings.CI.contains(OS, "win")) {
+			prefPath = Paths.get(APP_DATA, "ReactionSorter", "preferences.properties");
+		} else if (Strings.CI.contains(OS,"mac")) {
+			prefPath = Paths.get(USER_HOME, "Library", "Application Support", "ReactionSorter", "preferences.properties");
+		} else if (Strings.CI.contains(OS, "nix") || Strings.CI.contains(OS, "nux")) {
+			prefPath = Paths.get(USER_HOME, ".config", "ReactionSorter", "preferences.properties");
+		} else {
+			throw new UnsupportedOperationException("Unsupported OS: " + OS);
+		}
+		
+		log.info("OS detected: {}", OS);
+	}
+	
+	private void loadPreferences() {
+		try {
+			if (Files.exists(prefPath)) {
+				try (InputStream prefs = Files.newInputStream(prefPath)) {
+					preferences.load(prefs);
+					log.info("Preferences successfully loaded");
+				} catch (Exception e) {
+					log.error("Error reading preferences file: {}", e.getMessage());
+					throw e;
+				}
+			} else {
+				try {
+					createLocalPreferences();
+				} catch (Exception e) {
+					// Reopen stream to start from beginning
+					try (InputStream defaultPrefs = ClassLoader.getSystemResourceAsStream("preferences.properties")) {
+						preferences.load(defaultPrefs);
+						log.info("Default preferences loaded");
+					} catch (Exception ex) {
+						log.error("Error loading default preferences: {}", ex.getMessage());
+						throw ex;
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("Failed to load preferences: {}", e.getMessage());
+		}
+	}
+	
+	// Separate method for readability & testing purposes
+	private void createLocalPreferences() throws IOException {
+		try (defaultPrefs) {
+			if (!Files.isDirectory(prefPath.getParent())) {
+				Files.createDirectories(prefPath.getParent());
+				log.info("ReactionSorter directory created at: {}", prefPath.getParent());
+			}
+			
+			Files.copy(defaultPrefs, prefPath);
+			log.info("Preferences file created at: {}", prefPath);
+			
+			// Load with existing logic to validate
+			loadPreferences();
+		} catch (Exception e) {
+			log.error("Error creating local preferences file: {}", e.getMessage());
+			throw e;
+		}
 	}
 }

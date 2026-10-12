@@ -94,6 +94,7 @@ public class WorkingSceneController implements StageAwareController {
 		this.preferencesService = preferencesService;
 		this.buttonService = buttonService;
 		
+		// IDEA possibly localize within embeddedMediaPlayer below if only needed there
 		this.mediaPlayerFactory = new MediaPlayerFactory();
 		this.embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
 		this.embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
@@ -177,8 +178,7 @@ public class WorkingSceneController implements StageAwareController {
 			isMove = true;
 		} catch (Exception e) {
 			// If move fails, doesn't load next file
-			// BUG doesn't work, exception not passed from moveFile()?
-			log.error("Error error moving file: {}", e.getMessage());
+			// BUG (test fix from ButtonService(44)) doesn't work, exception not passed from moveFile()?
 			return;
 		}
 		

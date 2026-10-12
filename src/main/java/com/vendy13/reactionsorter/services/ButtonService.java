@@ -29,7 +29,7 @@ public class ButtonService {
 		this.directoryCache = directoryCache;
 	}
 	
-	public void moveFile(String newFileName, String targetDirectory, ReactionObject workingFile) {
+	public void moveFile(String newFileName, String targetDirectory, ReactionObject workingFile) throws IOException {
 		try {
 			String newFilePath = Path.of(targetDirectory, newFileName).toString(); // TODO check for illegal characters
 			Files.move(Path.of(workingFile.filePath()), Path.of(newFilePath), StandardCopyOption.ATOMIC_MOVE);
@@ -41,6 +41,7 @@ public class ButtonService {
 			log.info("File successfully moved to: {}", newFilePath);
 		} catch (Exception e) {
 			log.error("Error moving file: {}", e.getMessage());
+			throw e;
 		}
 	}
 	
